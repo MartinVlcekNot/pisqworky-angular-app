@@ -1,0 +1,44 @@
+.owner-cross {
+  color: #3065bb;
+}
+
+.owner-circle {
+  color: #dd3658;
+}
+
+.owner-neutral {
+  color: #bbbbbb;
+}
+
+.inactive {
+  background-color: #eeeeee;
+}
+
+  .inactive:hover {
+    background-color: #dddddd;
+  }
+
+.active {
+  background-color: #fdf6c9
+}
+
+  .active:hover {
+    background-color: #fef095
+  }
+
+.grid-cell {
+  text-align: center;
+  font-size: 2rem;
+  margin: 0;
+  padding: 0;
+  border-right: 1px solid #bbbbbb;
+  border-bottom: 1px solid #bbbbbb;
+  border-top: none;
+  border-left: none;
+  cursor: pointer;
+}
+
+.cell-bounds {
+  padding: 0;
+  margin: 0;
+}

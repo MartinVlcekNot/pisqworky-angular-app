@@ -1,0 +1,34 @@
+.input-container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  width: 150px;
+}
+
+.input-label {
+  margin-right: 10px;
+}
+
+.input-num {
+  border-radius: 0;
+  font-family: 'Arial', sans-serif;
+  padding: 8px;
+}
+
+  .input-num:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+
+.input-num-valid {
+  border: 1px solid #333;
+}
+
+  .input-num-valid:hover {
+    background-color: #f0f0f0;
+  }
+
+.input-num-invalid {
+  border: 1px solid #ff7777;
+  background-color: #ffcccc
+}

@@ -1,0 +1,9 @@
+<table id="playfield" [style]="boundsStyle">
+  <tbody>
+    <tr *ngFor="let row of grid">
+      <td class="nomargin nopadding" *ngFor="let cell of row.row">
+        <cell-shell [cell]="cell"></cell-shell>
+      </td>
+    </tr>
+  </tbody>
+</table>

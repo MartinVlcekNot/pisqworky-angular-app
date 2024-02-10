@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\dist\\pisqapp",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\input-box",
+    "\\src\\app\\input-box\\input-number",
+    "\\src\\app\\restart",
+    "\\src\\assets",
+    "\\src\\eventHandler",
+    "\\src\\styleClassManagement"
+  ],
+  "PreviewInSolutionExplorer": false
+}
