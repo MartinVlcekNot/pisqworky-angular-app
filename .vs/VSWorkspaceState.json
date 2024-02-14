@@ -1,15 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\dist\\pisqapp",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\input-box",
-    "\\src\\app\\input-box\\input-number",
-    "\\src\\app\\restart",
+    "\\src\\app\\cell",
+    "\\src\\app\\cell\\cell-shell",
+    "\\src\\app\\grid",
+    "\\src\\app\\grid\\gridRow",
     "\\src\\assets",
     "\\src\\eventHandler",
     "\\src\\styleClassManagement"
   ],
+  "SelectedNode": "\\src\\app\\cell\\cell.service.ts",
   "PreviewInSolutionExplorer": false
 }

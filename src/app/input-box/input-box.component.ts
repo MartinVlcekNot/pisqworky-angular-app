@@ -5,8 +5,6 @@ import { ClassManagementService } from '../../styleClassManagement/class-managem
 
 @Component({
   selector: 'input-box',
-
-  // tento komponent nemá vlastní šablonu ani styly
   templateUrl: './input-box.component.html',
   styleUrl: './input-box.component.css',
 })
@@ -45,7 +43,6 @@ export class InputBoxComponent<T> implements IClassManagement {
     this.classString = this.cmService.formatClasses(value);
   }
 
-  // třída se musí přidat když je hodnota invalidní
   protected classString = "";
 
   public invalidate() {

@@ -1,8 +1,7 @@
 export class Event<TArgs> {
 
-  // Metody, které se zde budou ukládat by měly být "arrow function", jinak ve třídě, kde jsou inicializovány, nebudou mít přístup k instanci this.
+  // Metody, které se zde budou ukládat by měly být "arrow function", jinak ve třídě, kde jsou deklarovány, nebudou mít přístup k instanci this.
   public subscribers: Array<(sender: object | undefined, args: TArgs) => void> = [];
-
   public addSubscriber(subscriber: (sender: object | undefined, args: TArgs) => void) {
     this.subscribers.push(subscriber);
   }

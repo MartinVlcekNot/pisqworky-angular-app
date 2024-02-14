@@ -12,8 +12,18 @@ import { ClassManagementService } from '../../styleClassManagement/class-managem
 import { IClassManagement } from '../../styleClassManagement/classManagementInterface';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
 
+// Třída 'Cell' slouží jako schránka pro data a operace potřebné pro chod komponentu './cell-shell/cell-shell.component.CellShellComponent'.
+// N instancí 'Cell' je generováno v případě, že dojde ke změně šířky mřížky '../grid/(grid.component).GridComponent' a tato změna
+// vyžaduje přidání nových buněk, nikoli jejich odebrání.
+//
+// Implementuje rozhranní
+//    '../position/posInterface.IPos<Cpos>' viz '../position/posInterface.IPos'
+//    '../parent/parentInterface.IParent<../grid/gridRow/gridRow.GridRow>' viz '../parent/parentInterface.IParent'
+//    viz '../../styleClassManagement/classManagementInterface'
+
 export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
 
+  // komponent './cell-shell/cell-shell.component.CellShellComponent', který v sobě tento objekt zapouzdří
   private _shell: CellShellComponent | undefined;
   public get shell(): CellShellComponent | undefined { return this._shell }
   public set shell(value: CellShellComponent | undefined) {
@@ -25,6 +35,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
       this.shellChanged(this.shell);
   }
 
+  // událost nastávající tehdy, když se změní hodnota 'this._shell'
   public shellChange: Event<{ shellValue: CellShellComponent | undefined }> = new Event;
   private shellChanged(curShell: CellShellComponent | undefined) {
     this.shellChange.invoke(this, { shellValue: curShell });
@@ -35,6 +46,8 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.enableInteraction();
   }
 
+  // symbol reprezentující vlastníka této buňky
+  // při každém přiřazení se jeho hodnota propíše do pole 'this.shell.symbol'
   private _symbol: string = '';
   public get symbol() { return this._symbol; }
   private set symbol(value: string) {
@@ -44,24 +57,28 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
       this.shell.symbol = this.symbol;
   }
 
+  // vlastník této buňky typu '../player/owner.Owner'
   private _owner = Owner.nobody;
   public get owner() { return this._owner; }
   public set owner(value: Owner) {
     this._owner = value;
   }
 
+  // nastaví vlastníka této buňky a zároveň odpovídající symbol
   public setOwner(value: Owner) {
     this.owner = value;
 
     this.symbol = this.cellService.getSymbol(this.owner);
   }
 
+  // určuje, zda buňka reaguje na podněty ze strany uživatele
   private _interactable = true;
   public get interactable() { return this._interactable; }
   public set interactable(value: boolean) {
     this._interactable = value;
   }
 
+  // povolí interakci ze strany uživatele
   public enableInteraction() {
     if (this.shell !== undefined)
       this.shell.onClick = this.clickEnabled;
@@ -69,6 +86,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.interactable = true;
   }
 
+  // zakáže interakci ze strany uživatele
   public disableInteraction() {
     if (this.shell !== undefined)
       this.shell.onClick = this.clickDisabled;
@@ -76,9 +94,11 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.interactable = false;
   }
 
+  // minimální počet stejných symbolů za sebou jdoucích potřebný na vítězství
   public inRow = this.gridService.defaultInRow;
 
-  // přídavná metoda pro eventhandler ve třídě InputBoxComponent
+  // přídavná metoda pro eventhandler v komponentu '../input-box/(input-box.component).InputBoxComponent'
+  // může externě nastavit 'this.inRow'
   public setInRowExt = (sender: object | undefined, args: IBValueChangeArgs<number>) => {
     if (args.value !== undefined)
       this.inRow = args.value;
@@ -90,11 +110,15 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     }
   }
 
+  // viz '../position/posInterface.IPos'
   private _posObj: Pos<Cpos> = new Pos(new Cpos());
   public get posObj(): Pos<Cpos> { return this._posObj; }
 
+  // viz '../parent/parentInterface.IParent'
   public parentObj: Parent<GridRow> = new Parent();
 
+  // zavolá se tehdy, když nastane událost 'this.parentObj.parentChange'
+  // provede změny v souvislosti s novým rodičovským objektem
   private onParentChanged = (sender: object | undefined, args: { parentValue: GridRow | undefined }) => {
     if (args.parentValue !== undefined) {
       args.parentValue.posObj.pos.rowChange.addSubscriber(this.onParentRowChanged);
@@ -102,10 +126,13 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     }
   }
 
+  // zavolá se tehdy, když nastane událost 'this.parentObj.parent.posObj.pos.rowChange'
+  // provede změny v souvislosti s novými souřadnicemi
   private onParentRowChanged = (sender: object | undefined, args: { rowValue: number | undefined }) => {
     this.posObj.pos.row = args.rowValue;
   }
 
+  // pole v reálném čase obsahující stylové třídy, které se mají aplikovat
   private _classes: Array<string> = [];
   public get classes() { return [...this._classes] }
   private set classes(value: Array<string>) {
@@ -114,6 +141,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.toggleClasses();
   }
 
+  // stylové třídy zformátuje a uloží je do pole 'this.shell.classString'
   public toggleClasses(): boolean {
     if (this.shell !== undefined) {
       this.shell.classString = this.cmService.formatClasses(this.classes);
@@ -124,6 +152,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     return false;
   }
 
+  // <operace se stylovými třídami>
   public addClasses(classes: Array<string>) {
     this.cmService.addClasses(this, classes);
   }
@@ -135,7 +164,9 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
   public clearClasses() {
     this.cmService.clearClasses(this);
   }
+  // </operace se stylovými třídami>
 
+  // nastaví buňku do počátečního stavu
   public clearAndSetUp() {
     this.enableInteraction();
 
@@ -146,6 +177,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.addClasses(this.cellService.defaultClasses);
   }
 
+  // zjistí, zdali je aktuální stav hry výherní
   public checkWin(): boolean {
     let line = this.cellService.checkDirections(this, this.cellService.directions, this.inRow)
     
@@ -172,7 +204,8 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.classes = this.cellService.defaultClasses;
     this.enableInteraction();
   }
-  
+
+  // volá se při kliknutí do buňky, když je buňka ve stavu, kdy reaguje na podněty ze strany uživatele
   clickEnabled = () => {
     let owner = this.cellService.getGridPlayer(this);
 
@@ -207,11 +240,13 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.disableInteraction();
   }
 
+  // volá se při kliknutí do buňky, když je buňka ve stavu, kdy nereaguje na podněty ze strany uživatele
   clickDisabled = () => {
     // nic se nestane
   }
 }
 
+// typ souřadnic používaný v 'Cell'
 export class Cpos {
 
   private _row: number | undefined;
@@ -232,6 +267,7 @@ export class Cpos {
   }
 }
 
+// třída regulující dotazy na výhru, když se změní minimální počet symbolů v řadě 'Cell.inRow'
 export class CheckWinManager {
 
   public winFound: boolean;
