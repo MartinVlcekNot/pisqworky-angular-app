@@ -1,13 +1,16 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { GridService } from './grid.service';
 import { GridRow } from './gridRow/gridRow';
 import { Event } from '../../eventHandler/event';
-import { IBoundsStyle } from '../boundsStyleInterface';
+import { IBoundsStyle } from '../boundsStyle/boundsStyleInterface';
 import { CellService } from '../cell/cell.service';
 import { Player } from '../player/player';
-import { Owner } from '../player/owner';
 import { ClassManagementService } from '../../styleClassManagement/class-management.service';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
+
+// Komponent 'GridComponent' je tabulka (dále používáno spíše mřížka) komponentů '../cell/cell-shell/(cell-shell.component).CellShellComponent'
+// sloužící jako hrací pole.
+// Je reprezentována značkou '<grid>' použitou v souboru '../app.component.html'.
 
 @Component({
   selector: 'grid',
@@ -16,10 +19,12 @@ import { IBValueChangeArgs } from '../input-box/input-box.component';
 })
 export class GridComponent implements IBoundsStyle {
 
+  // id přiřazené této mřížce
   public get id() {
     return GridService.getGridId(this);
   }
 
+  // počet sloupců mřížky
   private _width: number | undefined;
   public get width(): number {
     if (this._width === undefined) {
@@ -40,20 +45,24 @@ export class GridComponent implements IBoundsStyle {
       this.widthChanged(this.width);
   }
 
+  // událost nastávající tehdy, když se změní hodnota this._width
   public widthChange: Event<{ widthValue: number }> = new Event();
   private widthChanged(curWidth: number) {
     this.widthChange.invoke(this, { widthValue: curWidth });
   }
 
-  // přídavná metoda pro eventhandler ve třídě InputBoxComponent
+  // přídavná metoda pro eventhandler v komponentu '../input-box/(input-box.component).InputBoxComponent'
+  // může externě nastavit 'this.width'
   public setWidthExt = (sender: object | undefined, args: IBValueChangeArgs<number>) => {
     this.width = args.value;
   }
 
+  // šířka komponentu v pixelech
   public get pxWidth() {
     return this.width * this.cellService.cellBounds + 1;
   }
 
+  // počet řádků mřížky
   private _height: number | undefined;
   public get height(): number {
     if (this._height === undefined) {
@@ -75,6 +84,7 @@ export class GridComponent implements IBoundsStyle {
     }
   }
 
+  // událost nastávající tehdy, když se změní hodnota 'this._height'
   public heightChange: Event<{ heightValue: number }> = new Event();
   private heightChanged(curHeight: number) {
     this.heightChange.invoke(this, { heightValue: curHeight });
@@ -83,37 +93,47 @@ export class GridComponent implements IBoundsStyle {
     this.gridService.adjustRow<GridRow, GridComponent>(this.grid, args.heightValue, this.gridService.gridRowFactory, this);
   }
 
-  // přídavná metoda pro eventhandler ve třídě InputBoxComponent
+  // přídavná metoda pro eventhandler v komponentu '../input-box/(input-box.component).InputBoxComponent'
+  // může externě nastavit 'this.height'
   public setHeightExt = (sender: object | undefined, args: IBValueChangeArgs<number>) => {
     this.height = args.value;
   }
 
+  // výška komponentu v pixelech
   public get pxHeight() {
     return this.height * this.cellService.cellBounds + 1;
   }
 
+  // zápis stylu šířky a výšky do řetězce, který může být předán jako hodnota atributu 'style' v HTML kontextu
+  // viz '../boundsStyle.boundsStyleInterface.IBoundsStyle'
   public get boundsStyle() {
     return "width: " + this.pxWidth + "px; height: " + this.pxHeight + "px;";
   }
 
+  // mřížka chápaná jako množina řádků mřížky './gridRow/gridRow.GridRow'
   private _grid: Array<GridRow> = [];
   public get grid() { return this._grid; }
   private set grid(value: Array<GridRow>) { this._grid = value; }
 
+  // hráč na tahu v konkrétní mřížce
   private _player: Player = new Player();
   public get player() { return this._player; }
 
+  // přepne hráče na tahu
   public switchPlayer() {
     this.player.switchPlayer();
   }
 
+  // nastaví hráče na tahu na výchozí hodnotu viz '../player/player.Player';
   public resetPlayer() {
     this.player.resetPlayer();
   }
 
-  constructor(private gridService: GridService, public cellService: CellService, public cmService: ClassManagementService) {
-    let id = this.gridService.generateId;
+  public constructor(private gridService: GridService, public cellService: CellService, public cmService: ClassManagementService) {
+    // vygeneruje unikátní id pro konkrétní mřížku a registruje ji
+    let id = this.gridService.originalId;
     GridService.idGridBase.push({ id: id, inst: this });
+    //
 
     this.heightChange.addSubscriber(this.onHeightChanged);
 

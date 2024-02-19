@@ -1,8 +1,3 @@
-<table>
-  <tbody>
-    <tr></tr>
-  </tbody>
-</table>
 <input-number [defValue]="this.gridService.defaultWidth.toString()" [labelText]="'šířka:'" [id]="'width'" [subscriberFuncs]="setGridWidthFuncs"></input-number>
 <input-number [defValue]="this.gridService.defaultHeight.toString()" [labelText]="'výška:'" [id]="'height'" [subscriberFuncs]="setGridHeightFuncs"></input-number>
 <input-number [defValue]="this.gridService.defaultInRow.toString()" [labelText]="'v řadě:'" [id]="'in-row'" [subscriberFuncs]="setInRowFuncs" [additionalArgsFactory]="createChWM"></input-number>

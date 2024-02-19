@@ -1,10 +1,10 @@
-import { AfterViewInit, Component } from '@angular/core';
-import { IBoundsStyle } from './boundsStyleInterface';
+import { Component, ViewChild } from '@angular/core';
+import { IBoundsStyle } from './boundsStyle/boundsStyleInterface';
 import { GridService } from './grid/grid.service';
 import { GridComponent } from './grid/grid.component';
 import { CellService } from './cell/cell.service';
-import { CheckWinManager } from './cell/cell';
 import { IBValueChangeArgs } from './input-box/input-box.component';
+import { CheckWinManager } from './cell/cell';
 
 @Component({
   selector: 'app-root',
@@ -12,15 +12,18 @@ import { IBValueChangeArgs } from './input-box/input-box.component';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements IBoundsStyle {
-  title = 'pisqapp';
 
-  private _gridId = 0;
-  public get gridId() {
-    return this._gridId;
+  @ViewChild(GridComponent, { static: true }) gridChild!: GridComponent;
+
+  public get grid(): GridComponent | undefined {
+    return this.gridChild;
   }
 
-  public get grid() {
-    return GridService.getGridById(this.gridId);
+  public get gridId() {
+    if (this.grid === undefined)
+      return -1;
+
+    return this.grid.id;
   }
 
   public get setGridWidthFuncs(): Array<(sender: object | undefined, args: IBValueChangeArgs<number>) => void> {
@@ -38,10 +41,18 @@ export class AppComponent implements IBoundsStyle {
   }
 
   public get setInRowFuncs(): Array<(sender: object | undefined, args: IBValueChangeArgs<number>) => void> {
-    return this.gridService.getInRowSetFuncs(this.gridId);
+    if (this.grid !== undefined)
+      return this.gridService.getInRowSetFuncs(this.grid);
+
+    return [];
   }
 
-  public createChWM: () => any = this.cellService.createChWM;
+  public createChWM = () => {
+    if (this.grid !== undefined)
+      return this.gridService.createChWM(this.grid);
+
+    return undefined;
+  }
 
   public get pxWidth(): number {
     let pxw = GridService.getGridById(this.gridId)?.pxWidth;

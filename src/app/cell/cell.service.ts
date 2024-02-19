@@ -208,11 +208,6 @@ export class CellService {
   }
 
   // </metody rozhodující o vítězství>
-
-  // továrna na './cell.CheckWinManager'
-  public createChWM: () => CheckWinManager = () => {
-    return new CheckWinManager();
-  }
 }
 
 export type Dir = {

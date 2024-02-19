@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { Cell } from '../cell';
 import { CellService } from '../cell.service';
-import { IBoundsStyle } from '../../boundsStyleInterface';
+import { IBoundsStyle } from '../../boundsStyle/boundsStyleInterface';
 
-// Komponent 'CellShellComponent' obsahuje instanci ../cell.Cell, která zapouzdřuje data a operace potřebné pro fungování tohoto komponentu jako celku.
+// Komponent 'CellShellComponent' je pomyslnou grafickou a interakční stránkou pro celek buňky. Obsahuje instanci ../cell.Cell, která zapouzdřuje
+// data a operace potřebné pro fungování tohoto komponentu jako celku.
 // 'CellShellComponent' je dynamicky generován pomocí direktivy *ngFor v souboru '../../grid/grid.component.html'.
 //
 // Pro každý prvek '../../grid/gridRow/gridRow.GridRow' pole 'grid' v '../../grid/(grid.component).GridComponent' se vygeneruje

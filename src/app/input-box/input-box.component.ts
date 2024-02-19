@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Event } from '../../eventHandler/event';
 import { IClassManagement } from '../../styleClassManagement/classManagementInterface';
 import { ClassManagementService } from '../../styleClassManagement/class-management.service';
+import { GridService } from '../grid/grid.service';
 
 @Component({
   selector: 'input-box',
@@ -40,7 +41,11 @@ export class InputBoxComponent<T> implements IClassManagement {
   private set classes(value: Array<string>) {
     this._classes = value;
 
-    this.classString = this.cmService.formatClasses(value);
+    this.toggleClasses();
+  }
+
+  public toggleClasses() {
+    this.classString = this.cmService.formatClasses(this.classes);
   }
 
   protected classString = "";
@@ -65,7 +70,7 @@ export class InputBoxComponent<T> implements IClassManagement {
     this._value = value;
 
     if (this.value !== previous)
-      this.valueChanged({ value: this.value, additionalArgs: this.additionalArgsFactory() });
+      this.valueChanged({ value: this.value, additionalArgs: this.additionalArgsFactory()});
   }
 
   public valueChange: Event<IBValueChangeArgs<T>> = new Event();

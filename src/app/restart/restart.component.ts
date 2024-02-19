@@ -20,6 +20,9 @@ export class RestartComponent {
   }
 
   @HostListener('click') onClick() {
-    this.gridService.clearAndSetUpGrid(this.gridId);
+    let grid = GridService.getGridById(this.gridId);
+
+    if (grid !== undefined)
+      this.gridService.clearAndSetUpGrid(grid);
   }
 }

@@ -29,8 +29,7 @@ yarn-error.log
 .history/*
 
 # Visual Studio
-
-.vs/pisqapp/FileContentIndex/01ebc165-5e07-4cdd-9c5a-f411261c667f.vsidx
+.vs/pisqapp/FileContentIndex/*
 
 # Miscellaneous
 /.angular/cache

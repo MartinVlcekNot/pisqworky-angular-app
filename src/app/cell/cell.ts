@@ -19,7 +19,7 @@ import { IBValueChangeArgs } from '../input-box/input-box.component';
 // Implementuje rozhranní
 //    '../position/posInterface.IPos<Cpos>' viz '../position/posInterface.IPos'
 //    '../parent/parentInterface.IParent<../grid/gridRow/gridRow.GridRow>' viz '../parent/parentInterface.IParent'
-//    viz '../../styleClassManagement/classManagementInterface'
+//    viz '../../styleClassManagement/classManagementInterface.IClassManagement'
 
 export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
 
@@ -58,25 +58,16 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
   }
 
   // vlastník této buňky typu '../player/owner.Owner'
+  // vlastnost set nastaví i symbol
   private _owner = Owner.nobody;
   public get owner() { return this._owner; }
   public set owner(value: Owner) {
     this._owner = value;
-  }
-
-  // nastaví vlastníka této buňky a zároveň odpovídající symbol
-  public setOwner(value: Owner) {
-    this.owner = value;
-
     this.symbol = this.cellService.getSymbol(this.owner);
   }
 
   // určuje, zda buňka reaguje na podněty ze strany uživatele
-  private _interactable = true;
-  public get interactable() { return this._interactable; }
-  public set interactable(value: boolean) {
-    this._interactable = value;
-  }
+  public interactable = true;
 
   // povolí interakci ze strany uživatele
   public enableInteraction() {
@@ -84,6 +75,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
       this.shell.onClick = this.clickEnabled;
 
     this.interactable = true;
+    this.allowCheckingWin = true;
   }
 
   // zakáže interakci ze strany uživatele
@@ -94,6 +86,9 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.interactable = false;
   }
 
+  // speciální případ interakce týkající se kontrolování vítězství
+  public allowCheckingWin = true;
+
   // minimální počet stejných symbolů za sebou jdoucích potřebný na vítězství
   public inRow = this.gridService.defaultInRow;
 
@@ -103,16 +98,16 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     if (args.value !== undefined)
       this.inRow = args.value;
 
-    if (this.interactable) {
+    if (this.allowCheckingWin) {
       let checkWinManager = args.additionalArgs as CheckWinManager;
+
       if (!checkWinManager.winFound)
         checkWinManager.winFound = this.checkWin();
     }
   }
 
   // viz '../position/posInterface.IPos'
-  private _posObj: Pos<Cpos> = new Pos(new Cpos());
-  public get posObj(): Pos<Cpos> { return this._posObj; }
+  public posObj: Pos<Cpos> = new Pos(new Cpos());
 
   // viz '../parent/parentInterface.IParent'
   public parentObj: Parent<GridRow> = new Parent();
@@ -134,14 +129,17 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
 
   // pole v reálném čase obsahující stylové třídy, které se mají aplikovat
   private _classes: Array<string> = [];
+  // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   public get classes() { return [...this._classes] }
+  // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   private set classes(value: Array<string>) {
-    this._classes = [...value];
+    this._classes = value;
 
     this.toggleClasses();
   }
 
   // stylové třídy zformátuje a uloží je do pole 'this.shell.classString'
+  // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   public toggleClasses(): boolean {
     if (this.shell !== undefined) {
       this.shell.classString = this.cmService.formatClasses(this.classes);
@@ -171,7 +169,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.enableInteraction();
 
     // nastaví i symbol
-    this.setOwner(Owner.nobody);
+    this.owner = Owner.nobody;
 
     this.clearClasses();
     this.addClasses(this.cellService.defaultClasses);
@@ -180,15 +178,21 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
   // zjistí, zdali je aktuální stav hry výherní
   public checkWin(): boolean {
     let line = this.cellService.checkDirections(this, this.cellService.directions, this.inRow)
-    
+
     if (line.length >= this.inRow) {
-      this.gridService.disableAllCells(this.cellService.getParentGridId(this));
+      let grid = this.cellService.getGridByCell(this);
+
+      if (grid !== undefined)
+        this.gridService.disableAllCells(grid);
+
       console.log("vyhrává " + this.symbol + "!!!");
 
       // vizualizace
       this.addClasses([this.cellService.getOwnerClass(this.owner)]);
-      this.gridService.setClassesExceptOf(this.cellService.getParentGridId(this), line, ["owner-cross", "owner-circle", "inactive"], false);
-      this.gridService.setClassesExceptOf(this.cellService.getParentGridId(this), line, ["owner-neutral"], true);
+      if (grid !== undefined) {
+        this.gridService.setClassesExceptOf(grid, line, ["owner-cross", "owner-circle", "inactive"], false);
+        this.gridService.setClassesExceptOf(grid, line, ["owner-neutral"], true);
+      }
       // konec vizualizace
 
       return true;
@@ -210,7 +214,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     let owner = this.cellService.getGridPlayer(this);
 
     if (owner !== undefined)
-      this.setOwner(owner);
+      this.owner = owner;
 
     this.cellService.switchGridPlayer(this);
 
@@ -224,10 +228,18 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     //
     this.removeClasses(["inactive"]);
 
-    this.checkWin();
+    let grid = this.cellService.getGridByCell(this);
+
+    if (grid !== undefined) {
+      let checkWinManager = this.gridService.createChWM(grid);
+      checkWinManager.winFound = this.checkWin();
+    }
+    else
+      this.checkWin();
 
     this.addClasses(["active", this.cellService.getOwnerClass(this.owner)]);
-    this.gridService.setClassesExceptOf(this.cellService.getParentGridId(this), [this], ["active"], false);
+    if (grid !== undefined)
+      this.gridService.setClassesExceptOf(grid, [this], ["active"], false);
     //
     // třídy této buňky =
     // { "active"; "owner-{symbol}" }
@@ -270,9 +282,18 @@ export class Cpos {
 // třída regulující dotazy na výhru, když se změní minimální počet symbolů v řadě 'Cell.inRow'
 export class CheckWinManager {
 
-  public winFound: boolean;
-
-  public constructor() {
-    this.winFound = false;
+  private _winFound = false;
+  public get winFound() {
+    return this._winFound;
   }
+  public set winFound(value: boolean) {
+    let previous = this._winFound;
+
+    this._winFound = value;
+
+    if (this.winFound !== previous && this.winFound)
+      this.onWinFound();
+  }
+
+  public onWinFound: () => void = () => { };
 }
