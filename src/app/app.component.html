@@ -1,8 +1,11 @@
-<input-number [defValue]="this.gridService.defaultWidth.toString()" [labelText]="'šířka:'" [id]="'width'" [subscriberFuncs]="setGridWidthFuncs"></input-number>
-<input-number [defValue]="this.gridService.defaultHeight.toString()" [labelText]="'výška:'" [id]="'height'" [subscriberFuncs]="setGridHeightFuncs"></input-number>
-<input-number [defValue]="this.gridService.defaultInRow.toString()" [labelText]="'v řadě:'" [id]="'in-row'" [subscriberFuncs]="setInRowFuncs" [additionalArgsFactory]="createChWM"></input-number>
+<div id="inputs">
+  <input-number [defValue]="this.gridService.defaultWidth.toString()" [labelText]="'šířka:'" [id]="'width'" [subscriberFuncs]="setGridWidthFuncs"></input-number>
+  <input-number [defValue]="this.gridService.defaultHeight.toString()" [labelText]="'výška:'" [id]="'height'" [subscriberFuncs]="setGridHeightFuncs"></input-number>
+  <input-number [defValue]="this.gridService.defaultInRow.toString()" [labelText]="'v řadě:'" [id]="'in-row'" [subscriberFuncs]="setInRowFuncs" [additionalArgsFactory]="createChWM"></input-number>
+</div>
 
-<div id="area" [style]="boundsStyle">
+
+<div id="play-area" [style]="boundsStyle">
   <grid></grid>
   <restart [gridId]="gridId"></restart>
 </div>

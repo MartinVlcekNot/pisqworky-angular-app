@@ -2,14 +2,19 @@
   display: flex;
   flex-direction: row;
   margin-bottom: 10px;
-  width: 150px;
+  width: 200px;
+  overflow: hidden;
+  background-color: #eeeeee;
 }
 
 .input-label {
-  margin-right: 10px;
+  width: 60px;
+  padding: 7px 0px 7px;
+  text-align: center;
 }
 
 .input-num {
+  width: calc(100% - 60px);
   border-radius: 0;
   font-family: 'Arial', sans-serif;
   padding: 8px;
@@ -17,7 +22,7 @@
 
   .input-num:focus {
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
   }
 
 .input-num-valid {

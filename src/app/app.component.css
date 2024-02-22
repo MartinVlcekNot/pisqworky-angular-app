@@ -1,5 +1,13 @@
-#area {
-  margin: 20px auto;
+#play-area {
+  top: 0px;
+  margin: auto;
   padding: 0;
   overflow: visible;
+}
+
+#inputs {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  width: 200px;
 }

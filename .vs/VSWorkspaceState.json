@@ -3,15 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\boundsStyle",
-    "\\src\\app\\grid",
-    "\\src\\app\\grid\\gridRow",
+    "\\src\\app\\cell",
+    "\\src\\app\\cell\\cell-shell",
     "\\src\\app\\input-box",
     "\\src\\app\\player",
     "\\src\\app\\position",
     "\\src\\app\\restart",
     "\\src\\styleClassManagement"
   ],
-  "SelectedNode": "\\src\\app\\restart\\restart.component.ts",
+  "SelectedNode": "\\src\\app\\app.component.html",
   "PreviewInSolutionExplorer": false
 }
