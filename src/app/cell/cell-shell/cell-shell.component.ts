@@ -23,7 +23,7 @@ import { IBoundsStyle } from '../../boundsStyle/boundsStyleInterface';
 export class CellShellComponent implements IBoundsStyle {
 
   // instance ../cell.Cell
-  // nastavuje se jako hodnota atributu 'cell'
+  // nastavuje se jako hodnota atributu 'cell' v šabloně tohoto komponentu (dynamická hodnota)
   private _cell: Cell | undefined;
   public get cell(): Cell | undefined { return this._cell };
   @Input() public set cell(value: Cell | undefined) {
@@ -33,14 +33,14 @@ export class CellShellComponent implements IBoundsStyle {
       this.cell.shell = this;
   }
 
-  // řetězec všech dynamicky operovaných tříd v reálném čase pro atribut class v HTML kontextu
+  // řetězec všech dynamicky operovaných tříd v reálném čase pro atribut 'class' v HTML kontextu
   public classString: string = "";
 
   // řetězec všech neměnných tříd pro atribut class v HTML kontextu
   public static readonly baseClassString: string = "grid-cell";
 
   // řetězec všech tříd, proměnlivých i neměnných pro atribut class v HTML kontextu
-  // dynamicky navázáno na atribut class v šabloně tohoto komponentu
+  // hodnota dynamicky předána atributu 'class' v šabloně tohoto komponentu
   public get classes() {
     return CellShellComponent.baseClassString + " " + this.classString;
   }
@@ -64,6 +64,6 @@ export class CellShellComponent implements IBoundsStyle {
   }
 
   // pole typu funkce pro metodu zavolanou po kliknutí
-  // navázáno na událost click v šabloně tohoto komponentu
+  // navázáno na událost 'click' v šabloně tohoto komponentu
   public onClick: () => void = () => { };
 }

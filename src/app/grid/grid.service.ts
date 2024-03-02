@@ -155,20 +155,6 @@ export class GridService {
           cell.removeClasses(classes);
       }
     });
-
-    /*this.getAllCellsById(gridId).forEach((cell) => {
-      if (excCells.includes(cell))
-        var exceptional = true;
-      else
-        var exceptional = false
-
-      if (!exceptional) {
-        if (add)
-          cell.addClasses(classes);
-        else
-          cell.removeClasses(classes);
-      }
-    });*/
   }
 
   // nastaví stylové třídy všech zadaných buněk '../cell/cell.Cell'
@@ -192,15 +178,6 @@ export class GridService {
           cell.disableInteraction();
       }
     });
-
-    /*this.getAllCellsById(gridId).forEach((cell) => {
-      if (cell.shell !== undefined) {
-        if (enabled)
-          cell.enableInteraction();
-        else
-          cell.disableInteraction();
-      }
-    });*/
   }
 
   // viz 'this.setCellsInteraction'
@@ -239,14 +216,6 @@ export class GridService {
     });
 
     return wantedCell;
-
-    /*this.getAllCellsById(gridId).forEach((cell) => {
-      if (pos.evaluatePosEquals(cell)) {
-        wantedCell = cell;
-
-        return;
-      }
-    });*/
   }
 
   // uvede hrací pole './(grid.component).GridComponent' do takového stavu, v jakém bylo před první interakcí uživatele
@@ -254,10 +223,6 @@ export class GridService {
     this.forEachCell(grid, (cell) => {
       cell.clearAndSetUp();
     });
-
-    /*this.getAllCellsById(gridId).forEach((cell) => {
-      cell.clearAndSetUp();
-    });*/
 
     grid.resetPlayer();
   }

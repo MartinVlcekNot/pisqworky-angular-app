@@ -31,7 +31,7 @@ export class GridRow implements IPos<Rpos>, IParent<GridComponent> {
       this.widthChanged(this.width);
   }
 
-  // událost, která nastane tehdy, když se změní hodnota 'this._width'
+  // událost, která nastane tehdy, když se změní hodnota 'this._width' skrze vlasnost 'this.width'
   public widthChange: Event<{ widthValue: number }> = new Event();
   private widthChanged(curWidth: number) {
     this.widthChange.invoke(this, { widthValue: curWidth });

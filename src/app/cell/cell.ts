@@ -35,7 +35,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
       this.shellChanged(this.shell);
   }
 
-  // událost nastávající tehdy, když se změní hodnota 'this._shell'
+  // událost nastávající tehdy, když se změní hodnota 'this._shell' skrze vlastnost 'this.shell'
   public shellChange: Event<{ shellValue: CellShellComponent | undefined }> = new Event;
   private shellChanged(curShell: CellShellComponent | undefined) {
     this.shellChange.invoke(this, { shellValue: curShell });

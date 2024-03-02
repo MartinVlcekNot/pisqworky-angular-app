@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { InputBoxComponent } from '../input-box.component';
 
+// Komponent 'InputNumberComponent' je odvozený ze základního komponentu '../(input-box.component).InputBoxComponent'. Je utvořený speciálně
+// pro zadávání čísel; jiná hodnota bude odfiltrována.
+
 @Component({
   selector: 'input-number',
   templateUrl: '../input-box.component.html',
@@ -8,15 +11,20 @@ import { InputBoxComponent } from '../input-box.component';
 })
 export class InputNumberComponent extends InputBoxComponent<number> {
 
+  // viz '../(input-box.component).InputBoxComponent'
+  public override valueRegulations = { bottomExcl: 0, topIncl: 40 };
+
+  // viz '../(input-box.component).InputBoxComponent'
   public override valueValidationFunc = (value: number | undefined) => {
     if (value !== undefined) {
-      if (value > InputBoxComponent.valueRange.bottomExcl && value <= InputBoxComponent.valueRange.topIncl)
+      if (value > this.valueRegulations.bottomExcl && value <= this.valueRegulations.topIncl)
         return true;
     }
 
     return false;
   }
 
+  // viz '../(input-box.component).InputBoxComponent'
   public override converterFunc = (value: string) => {
     let num = parseInt(value);
 
@@ -26,6 +34,7 @@ export class InputNumberComponent extends InputBoxComponent<number> {
     return num;
   }
 
+  // viz '../(input-box.component).InputBoxComponent'
   public override inputTextValidationFunc = (value: string) => {
     let digits: Array<string> = [];
 

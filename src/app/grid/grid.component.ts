@@ -8,9 +8,12 @@ import { Player } from '../player/player';
 import { ClassManagementService } from '../../styleClassManagement/class-management.service';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
 
-// Komponent 'GridComponent' je tabulka (dále používáno spíše mřížka) komponentů '../cell/cell-shell/(cell-shell.component).CellShellComponent'
+// Komponent 'GridComponent' je tabulka (dále používáno spíše "mřížka") komponentů '../cell/cell-shell/(cell-shell.component).CellShellComponent'
 // sloužící jako hrací pole.
 // Je reprezentována značkou '<grid>' použitou v souboru '../app.component.html'.
+//
+// Implementuje rozhranní
+//    viz '../boundsStyleInterface.IBoundsStyle'.
 
 @Component({
   selector: 'grid',
@@ -45,7 +48,7 @@ export class GridComponent implements IBoundsStyle {
       this.widthChanged(this.width);
   }
 
-  // událost nastávající tehdy, když se změní hodnota this._width
+  // událost nastávající tehdy, když se změní hodnota 'this._width' skrze vlastnost 'this.width'
   public widthChange: Event<{ widthValue: number }> = new Event();
   private widthChanged(curWidth: number) {
     this.widthChange.invoke(this, { widthValue: curWidth });
@@ -84,7 +87,7 @@ export class GridComponent implements IBoundsStyle {
     }
   }
 
-  // událost nastávající tehdy, když se změní hodnota 'this._height'
+  // událost nastávající tehdy, když se změní hodnota 'this._height' skrze vlasnost 'this.height'
   public heightChange: Event<{ heightValue: number }> = new Event();
   private heightChanged(curHeight: number) {
     this.heightChange.invoke(this, { heightValue: curHeight });
