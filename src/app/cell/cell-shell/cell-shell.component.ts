@@ -34,6 +34,7 @@ export class CellShellComponent implements IBoundsStyle {
   }
 
   // řetězec všech dynamicky operovaných tříd v reálném čase pro atribut 'class' v HTML kontextu
+  // dynamicky operované třídy viz '../../../styleClassManagement/(class-management.service).ClassManagementService'
   public classString: string = "";
 
   // řetězec všech neměnných tříd pro atribut class v HTML kontextu

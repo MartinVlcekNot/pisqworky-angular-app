@@ -48,7 +48,7 @@ export class GridComponent implements IBoundsStyle {
       this.widthChanged(this.width);
   }
 
-  // událost nastávající tehdy, když se změní hodnota 'this._width' skrze vlastnost 'this.width'
+  // událost nastávající tehdy, když se změní hodnota 'this._width' skrze set vlastnost 'this.width'
   public widthChange: Event<{ widthValue: number }> = new Event();
   private widthChanged(curWidth: number) {
     this.widthChange.invoke(this, { widthValue: curWidth });
@@ -87,7 +87,7 @@ export class GridComponent implements IBoundsStyle {
     }
   }
 
-  // událost nastávající tehdy, když se změní hodnota 'this._height' skrze vlasnost 'this.height'
+  // událost nastávající tehdy, když se změní hodnota 'this._height' skrze set vlasnost 'this.height'
   public heightChange: Event<{ heightValue: number }> = new Event();
   private heightChanged(curHeight: number) {
     this.heightChange.invoke(this, { heightValue: curHeight });

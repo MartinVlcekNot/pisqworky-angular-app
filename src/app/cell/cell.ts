@@ -35,7 +35,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
       this.shellChanged(this.shell);
   }
 
-  // událost nastávající tehdy, když se změní hodnota 'this._shell' skrze vlastnost 'this.shell'
+  // událost nastávající tehdy, když se změní hodnota 'this._shell' skrze set vlastnost 'this.shell'
   public shellChange: Event<{ shellValue: CellShellComponent | undefined }> = new Event;
   private shellChanged(curShell: CellShellComponent | undefined) {
     this.shellChange.invoke(this, { shellValue: curShell });
@@ -134,8 +134,6 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
   // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   private set classes(value: Array<string>) {
     this._classes = value;
-
-    this.toggleClasses();
   }
 
   // stylové třídy zformátuje a uloží je do pole 'this.shell.classString'

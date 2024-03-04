@@ -1,5 +1,9 @@
 import { Parent } from "./parentClass";
 
-export interface IParent<Tparent> {
-  parentObj: Parent<Tparent>;
+// Rozhranní 'IParent' u objektu určuje a zaručuje, že daný objekt má rodiče typu 'TParent'.
+
+export interface IParent<TParent> {
+
+  // rodičovský objekt typu './parentClass.Parent<TParent>'
+  parentObj: Parent<TParent>;
 }

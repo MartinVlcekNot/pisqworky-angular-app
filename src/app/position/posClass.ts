@@ -1,26 +1,38 @@
 import { IPos } from "./posInterface";
 
-export class Pos<Tpos> implements IPos<Tpos> {
+// Třída 'Pos' slouží jako schránka pro objekt pozice nebo souřadnic a poskytuje základní funkcionality jako např. porovnávání
+// instance s jinou instancí této třídy.
+//
+// TPos: typ objektu pozice nebo souřadnic (typ a počet dimenzí v soustavě)
+//
+// implementuje rozhranní
+//    '../position/posInterface.IPos<TPos>', aby byl sám považován za objekt odpovídající tvaru viz '../position/posInterface.IPos'
 
-  private _pos: Tpos;
+export class Pos<TPos> implements IPos<TPos> {
 
-  public get pos(): Tpos {
+  // objekt pozice nebo souřadnic
+  // nemůže nabývat hodnoty undefined; požadován v konstruktoru
+  private _pos: TPos;
+  public get pos(): TPos {
     return this._pos;
   }
-  public set pos(posVal: Tpos) {
+  public set pos(posVal: TPos) {
     this._pos = posVal;
   }
 
-  public get posObj(): Pos<Tpos> { return this; }
+  // přístup k instanci this
+  // určen rozhranním viz '../position/posInterface.IPos'
+  public get posObj(): Pos<TPos> { return this; }
 
-  public evaluatePosEquals(pos: IPos<Tpos>): boolean {
+  // porovnání dvou objektů pozice nebo souřadnic
+  public evaluatePosEquals(pos: IPos<TPos>): boolean {
     if (this.pos === pos)
       return true;
 
     return false;
   }
 
-  constructor(posInst: Tpos) {
+  constructor(posInst: TPos) {
     this._pos = posInst;
   }
 }

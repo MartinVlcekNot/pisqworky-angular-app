@@ -65,8 +65,6 @@ export class InputBoxComponent<T> implements IClassManagement {
   // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   private set classes(value: Array<string>) {
     this._classes = value;
-
-    this.toggleClasses();
   }
 
   // stylové třídy zformátuje a uloží je do pole 'this.classString'
@@ -106,7 +104,7 @@ export class InputBoxComponent<T> implements IClassManagement {
       this.valueChanged({ value: this.value, additionalArgs: this.additionalArgsFactory()});
   }
 
-  // událost nastávající tehdy, když se změní hodnota 'this._value' skrze vlasnost 'this.value'
+  // událost nastávající tehdy, když se změní hodnota 'this._value' skrze set vlasnost 'this.value'
   public valueChange: Event<IBValueChangeArgs<T>> = new Event();
   private valueChanged(args: IBValueChangeArgs<T>) {
     this.valueChange.invoke(this, args);

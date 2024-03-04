@@ -28,7 +28,7 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
-# Visual Studio
+# Visual Studio gitignore from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 # User-specific files
 *.rsuser

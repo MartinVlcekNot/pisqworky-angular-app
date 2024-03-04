@@ -1,6 +1,9 @@
 import { Pos } from "./posClass";
 
-export interface IPos<Tpos> {
+// Rozhranní 'IPos' u objektu určuje, že se daný objekt mimo jiné identifikuje skrze pozice nebo souřadnic.
 
-  get posObj(): Pos<Tpos>;
+export interface IPos<TPos> {
+
+  // objekt pozice nebo souřadnic typu './posClass.Pos<TPos>'
+  get posObj(): Pos<TPos>;
 }
