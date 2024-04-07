@@ -11,7 +11,7 @@ import { ClassManagementService } from '../../styleClassManagement/class-managem
 //
 // T: typ hodnoty, pro kterou je komponent určen
 //
-// implementuje rozhranní
+// implementuje rozhraní
 //    viz '../../styleClassManagement/classManagementInterface'
 //
 // povinné atributy:
@@ -197,7 +197,7 @@ export class InputBoxComponent<T> implements IClassManagement {
     }
   }
 
-  public constructor(private cmService: ClassManagementService) {
+  public constructor(protected cmService: ClassManagementService) {
     this.cmService.addClasses(this, ["input-num-valid"]);
   }
 }

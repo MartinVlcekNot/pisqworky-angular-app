@@ -10,6 +10,8 @@ import { CellShellComponent } from './cell/cell-shell/cell-shell.component';
 import { RestartComponent } from './restart/restart.component';
 import { InputBoxComponent } from './input-box/input-box.component';
 import { InputNumberComponent } from './input-box/input-number/input-number.component';
+import { GameOptionsComponent } from './game-options/game-options.component';
+import { ClassManagementService } from '../styleClassManagement/class-management.service';
 
 @NgModule({
   declarations: [
@@ -19,6 +21,7 @@ import { InputNumberComponent } from './input-box/input-number/input-number.comp
     RestartComponent,
     InputBoxComponent,
     InputNumberComponent,
+    GameOptionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -27,16 +30,12 @@ import { InputNumberComponent } from './input-box/input-number/input-number.comp
   providers: [
     provideClientHydration(),
     GridService,
-    CellService
+    CellService,
+    ClassManagementService
   ],
   bootstrap: [AppComponent]
 })
 
 export class AppModule {
 
-  constructor(injector: Injector) {
-    injInst = injector;
-  }
 }
-
-export let injInst: Injector;

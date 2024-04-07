@@ -16,7 +16,7 @@ import { IBValueChangeArgs } from '../input-box/input-box.component';
 // N instancí 'Cell' je generováno v případě, že dojde ke změně šířky mřížky '../grid/(grid.component).GridComponent' a tato změna
 // vyžaduje přidání nových buněk, nikoli jejich odebrání.
 //
-// Implementuje rozhranní
+// Implementuje rozhraní
 //    '../position/posInterface.IPos<Cpos>' viz '../position/posInterface.IPos'
 //    '../parent/parentInterface.IParent<../grid/gridRow/gridRow.GridRow>' viz '../parent/parentInterface.IParent'
 //    viz '../../styleClassManagement/classManagementInterface.IClassManagement'

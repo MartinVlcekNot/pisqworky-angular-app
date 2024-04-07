@@ -1,6 +1,6 @@
 import { Pos } from "./posClass";
 
-// Rozhranní 'IPos' u objektu určuje, že se daný objekt mimo jiné identifikuje skrze pozice nebo souřadnic.
+// Rozhraní 'IPos' u objektu určuje, že se daný objekt mimo jiné identifikuje skrze pozice nebo souřadnic.
 
 export interface IPos<TPos> {
 

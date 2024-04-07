@@ -12,7 +12,7 @@ import { IBValueChangeArgs } from '../input-box/input-box.component';
 // sloužící jako hrací pole.
 // Je reprezentována značkou '<grid>' použitou v souboru '../app.component.html'.
 //
-// Implementuje rozhranní
+// Implementuje rozhraní
 //    viz '../boundsStyleInterface.IBoundsStyle'.
 
 @Component({

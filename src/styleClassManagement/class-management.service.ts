@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IClassManagement } from './classManagementInterface';
 
-// Servis 'ClassManagementService' poskytuje metody pro operace s css třídami těch komponentů, které implementují rozhranní
-// viz './classManagementInterface.IClassManagement'; metody pro snadné přidávání a odebírání stylových tříd z komponentů.
-//
-// dynamicky operované třídy = stylové (css) třídy, které se v čase často mění podle stavu komponentu
+// dynamicky operované třídy viz './CLASSMANAGEMENTDOC.md'
 
 @Injectable({
   providedIn: 'root'

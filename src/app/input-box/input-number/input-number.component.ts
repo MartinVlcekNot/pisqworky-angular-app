@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { InputBoxComponent } from '../input-box.component';
+import { ClassManagementService } from '../../../styleClassManagement/class-management.service';
 
 // Komponent 'InputNumberComponent' je odvozený ze základního komponentu '../(input-box.component).InputBoxComponent'. Je utvořený speciálně
 // pro zadávání čísel; jiná hodnota bude odfiltrována.
@@ -10,6 +11,10 @@ import { InputBoxComponent } from '../input-box.component';
   styleUrl: '../input-box.component.css'
 })
 export class InputNumberComponent extends InputBoxComponent<number> {
+
+  public constructor(protected override cmService: ClassManagementService) {
+    super(cmService);
+  }
 
   // viz '../(input-box.component).InputBoxComponent'
   public override valueRegulations = { bottomExcl: 0, topIncl: 40 };

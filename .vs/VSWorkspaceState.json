@@ -3,14 +3,8 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\boundsStyle",
-    "\\src\\app\\cell",
-    "\\src\\app\\cell\\cell-shell",
-    "\\src\\app\\position",
-    "\\src\\app\\restart",
-    "\\src\\eventHandler",
-    "\\src\\styleClassManagement"
+    "\\src\\app\\grid"
   ],
-  "SelectedNode": "\\src\\styleClassManagement\\classManagementInterface.ts",
+  "SelectedNode": "\\src\\app\\grid\\grid.service.ts",
   "PreviewInSolutionExplorer": false
 }

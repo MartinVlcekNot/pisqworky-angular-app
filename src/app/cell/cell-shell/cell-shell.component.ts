@@ -13,7 +13,7 @@ import { IBoundsStyle } from '../../boundsStyle/boundsStyleInterface';
 // Pro každý prvek '../cell.Cell' pole 'row' v '../../grid/gridRow/gridRow.GridRow' se vygeneruje právě jeden 'CellShellComponent',
 // ve kterém se po dobu jeho existence bude přechovávat daná instance '../cell.Cell'.
 //
-// Implementuje rozhranní viz '../../boundsStyleInterface.IBoundsStyle'.
+// Implementuje rozhraní viz '../../boundsStyleInterface.IBoundsStyle'.
 
 @Component({
   selector: 'cell-shell',
@@ -50,12 +50,12 @@ export class CellShellComponent implements IBoundsStyle {
   // předáno v dynamickém kontextu v šabloně tohoto komponentu
   public symbol: string = '';
 
-  // viz rozhranní '../../boundsStyleInterface.IBoundsStyle'
+  // viz rozhraní '../../boundsStyleInterface.IBoundsStyle'
   public get bounds() {
     return this.cellService.cellBounds;
   }
 
-  // viz rozhranní '../../boundsStyleInterface.IBoundsStyle'
+  // viz rozhraní '../../boundsStyleInterface.IBoundsStyle'
   public get boundsStyle() {
     return "width: " + this.bounds + "px; height: " + this.bounds + "px;";
   }

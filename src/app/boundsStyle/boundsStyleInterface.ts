@@ -1,4 +1,4 @@
-// Rozhranní 'IboundsStyle' u objektu určuje, že daný objekt svůj styl dynamicky mění podle určitých parametrů.
+// Rozhraní 'IboundsStyle' u objektu určuje, že daný objekt svůj styl dynamicky mění podle určitých parametrů.
 
 export interface IBoundsStyle{
 

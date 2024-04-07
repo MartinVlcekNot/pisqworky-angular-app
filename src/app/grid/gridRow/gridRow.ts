@@ -13,7 +13,7 @@ import { ClassManagementService } from "../../../styleClassManagement/class-mana
 // N instancí 'GridRow' je generováno v případě, že dojde ke změně výšky mřížky '../grid/(grid.component).GridComponent' a tato změna
 // vyžaduje přidání nových řádků, nikoli jejich odebrání.
 //
-// Implementuje rozhranní
+// Implementuje rozhraní
 //    '../../position/posInterface.IPos<Rpos>' viz '../../position/posInterface.IPos'
 //    '../../parent/parentInterface.IParent<../(grid.component).GridComponent>' viz '../../parent/parentInterface.IParent'
 

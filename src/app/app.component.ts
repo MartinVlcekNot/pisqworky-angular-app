@@ -5,9 +5,9 @@ import { GridComponent } from './grid/grid.component';
 import { CellService } from './cell/cell.service';
 import { IBValueChangeArgs } from './input-box/input-box.component';
 
-// Komponent 'AppComponent' je kontejnerem celého uživatelského rozhranní.
+// Komponent 'AppComponent' je kontejnerem celého uživatelského rozhraní.
 //
-// implementuje rozhranní
+// implementuje rozhraní
 //    viz './boundsStyle/boundsStyleInterface.IBoundsStyle'
 
 @Component({
@@ -18,9 +18,9 @@ import { IBValueChangeArgs } from './input-box/input-box.component';
 export class AppComponent implements IBoundsStyle {
 
   // zpřístupní hrací pole, aby se k němu dalo přistupovat i v dětských komponentech
-  // výchozí je hodnota undefined (i když není povolená; proto se k objektu přistupuje skrze vlastnost 'this.grid'); objekt je zde uložen
+  // výchozí je hodnota undefined (bezpečnější je ke komponentu přistupovat skrze vlastnost 'this.grid'); komponent je zde uložen
   // okamžitě po jeho inicializaci
-  @ViewChild(GridComponent, { static: true }) gridChild!: GridComponent;
+  @ViewChild(GridComponent, { static: true }) gridChild!: GridComponent | undefined;
 
   // objekt hracího pole
   public get grid(): GridComponent | undefined {

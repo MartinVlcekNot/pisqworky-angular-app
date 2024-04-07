@@ -5,7 +5,7 @@ import { IPos } from "./posInterface";
 //
 // TPos: typ objektu pozice nebo souřadnic (typ a počet dimenzí v soustavě)
 //
-// implementuje rozhranní
+// implementuje rozhraní
 //    '../position/posInterface.IPos<TPos>', aby byl sám považován za objekt odpovídající tvaru viz '../position/posInterface.IPos'
 
 export class Pos<TPos> implements IPos<TPos> {
@@ -21,7 +21,7 @@ export class Pos<TPos> implements IPos<TPos> {
   }
 
   // přístup k instanci this
-  // určen rozhranním viz '../position/posInterface.IPos'
+  // určen rozhraním viz '../position/posInterface.IPos'
   public get posObj(): Pos<TPos> { return this; }
 
   // porovnání dvou objektů pozice nebo souřadnic
