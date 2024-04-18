@@ -1,4 +1,4 @@
-import { Injector, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -12,6 +12,7 @@ import { InputBoxComponent } from './input-box/input-box.component';
 import { InputNumberComponent } from './input-box/input-number/input-number.component';
 import { GameOptionsComponent } from './game-options/game-options.component';
 import { ClassManagementService } from '../styleClassManagement/class-management.service';
+import { InputBoxShComponent } from './input-box/input-box-sh/input-box-sh.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { ClassManagementService } from '../styleClassManagement/class-management
     InputBoxComponent,
     InputNumberComponent,
     GameOptionsComponent,
+    InputBoxShComponent,
   ],
   imports: [
     BrowserModule,

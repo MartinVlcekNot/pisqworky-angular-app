@@ -4,6 +4,8 @@ import { GridService } from './grid/grid.service';
 import { GridComponent } from './grid/grid.component';
 import { CellService } from './cell/cell.service';
 import { IBValueChangeArgs } from './input-box/input-box.component';
+import { OptionsElem } from './game-options/game-options.component';
+import { InputNumElem } from './input-box/input-number/input-number.component';
 
 // Komponent 'AppComponent' je kontejnerem celého uživatelského rozhraní.
 //
@@ -30,30 +32,65 @@ export class AppComponent implements IBoundsStyle {
   // id hracího pole
   // nabývá hodnoty -1, pokud je objekt undefined
   public get gridId() {
-    if (this.grid === undefined)
+    if (!this.grid)
       return -1;
 
     return this.grid.id;
   }
 
+  public get optionsData(): Array<OptionsElem> {
+    let data: Array<OptionsElem> = [
+      {
+        name: "width",
+        inputNumElemObj: {
+          labelText: "šířka",
+          defValue: this.gridService.defaultWidth.toString(),
+          usedId: "width",
+          subscriberFuncs: this.setGridWidthFuncs
+        }
+      },
+      {
+        name: "height",
+        inputNumElemObj: {
+          labelText: "výška",
+          defValue: this.gridService.defaultHeight.toString(),
+          usedId: "height",
+          subscriberFuncs: this.setGridHeightFuncs
+        }
+      },
+      {
+        name: "inRow",
+        inputNumElemObj: {
+          labelText: "v řadě",
+          defValue: this.gridService.defaultInRow.toString(),
+          usedId: "in-row",
+          subscriberFuncs: this.setInRowFuncs,
+          additionalArgsFactory: this.createChWM
+        }
+      }
+    ];
+
+    return data;
+  }
+
   // pole funkcí, které mohou externě nastavit šířku hracího pole './grid/(grid.component).GridComponent'
-  public get setGridWidthFuncs(): Array<(sender: object | undefined, args: IBValueChangeArgs<number>) => void> {
-    if (this.grid !== undefined)
+  protected get setGridWidthFuncs(): Array<(sender: object | undefined, args: IBValueChangeArgs<number>) => void> {
+    if (this.grid)
       return [this.grid.setWidthExt];
     else
       return [(sender: object | undefined, args: IBValueChangeArgs<number>) => { }];
   }
 
   // pole funkcí, které mohou externě nastavit výšku hracího pole './grid/(grid.component).GridComponent'
-  public get setGridHeightFuncs(): Array<(sender: object | undefined, args: IBValueChangeArgs<number>) => void> {
-    if (this.grid !== undefined)
+  protected get setGridHeightFuncs(): Array<(sender: object | undefined, args: IBValueChangeArgs<number>) => void> {
+    if (this.grid)
       return [this.grid.setHeightExt];
     else
       return [(sender: object | undefined, args: IBValueChangeArgs<number>) => { }];
   }
 
   // pole funkcí, které mohou externě nastavit počet znaků jdoucích za sebou potřebných k výhře v hracím poli './grid/(grid.component).GridComponent'
-  public get setInRowFuncs(): Array<(sender: object | undefined, args: IBValueChangeArgs<number>) => void> {
+  protected get setInRowFuncs(): Array<(sender: object | undefined, args: IBValueChangeArgs<number>) => void> {
     if (this.grid !== undefined)
       return this.gridService.getInRowSetFuncs(this.grid);
 
@@ -61,11 +98,15 @@ export class AppComponent implements IBoundsStyle {
   }
 
   // továrna na './cell/cell.CheckWinManager' viz './grid/(grid.service).GridService.createChWM'
-  public createChWM = () => {
-    if (this.grid !== undefined)
+  protected createChWM = () => {
+    if (this.grid)
       return this.gridService.createChWM(this.grid);
 
     return undefined;
+  }
+
+  constructor(protected gridService: GridService, private cellService: CellService) {
+
   }
 
   // šířka hrací plochy v pixelech (plocha zahrnující hrací pole a tlačítko restart)
@@ -81,9 +122,5 @@ export class AppComponent implements IBoundsStyle {
   // zápis stylu šířky do řetězce, který může být předán jako hodnota atributu 'style' v HTML kontextu
   public get boundsStyle() {
     return "width: " + this.PlayAreaPxWidth + "px;";
-  }
-
-  constructor(protected gridService: GridService, private cellService: CellService) {
-
   }
 }

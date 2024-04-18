@@ -20,8 +20,8 @@ import { ClassManagementService } from '../../styleClassManagement/class-managem
 //    [usedId]: string
 //
 // nepovinné atributy:
-//    [subscriberFunc]: (sender: object | undefined, args: { inRowValue: T | undefined, additionalArgs: AddArgs }) => void
-//    [additionalArgsFactory]: () => AArgs | undefined
+//    [subscriberFuncs]: Array<(sender: object | undefined, args: IBValueChangeArgs<T>) => void>
+//    [additionalArgsFactory]: () => any
 //    [valueValidationFunc]: (value: T | undefined) => boolean
 //    [converterFunc]: (value: string) => T | undefined
 //    [inputTextValidationFunc]: (value: string) => boolean
@@ -126,7 +126,7 @@ export class InputBoxComponent<T> implements IClassManagement {
   // továrna na vytváření argumentů pro vlastnost 'additionalArgs' parametru 'args' funkcí 'this.subscriberFuncs' 
   // možnost nastavit skrze stejnojmenný atribut tohoto komponentu (dynamická hodnota)
   @Input() public additionalArgsFactory: () => any = () => {
-    return undefined;
+    return { };
   }
 
   // metoda pro validaci dříve textové hodnoty nyní převedené do typu 'T' metodou 'this.converterFunc'
