@@ -3,8 +3,11 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\grid"
+    "\\src\\app\\cell",
+    "\\src\\app\\game-options",
+    "\\src\\app\\grid",
+    "\\src\\app\\input-box",
+    "\\src\\app\\input-box\\input-number"
   ],
-  "SelectedNode": "\\src\\app\\grid\\grid.service.ts",
   "PreviewInSolutionExplorer": false
 }
