@@ -1,3 +1,5 @@
 <div class="cell-bounds" [style]="boundsStyle">
-  <button [class]="classes" [style]="boundsStyle" (click)="onClick();">{{ symbol }}</button>
+  <button [class]="classes" [style]="boundsStyle" (click)="onClick();">
+    <img [src]="srcRef" [alt]="symbol" />
+  </button>
 </div>

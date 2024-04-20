@@ -1,5 +1,7 @@
 <div id="inputs">
-  <input-number [data]="getInpMunElemByName('width')" ><!--[labelText]="'šířka:'" [defValue]="this.gridService.defaultWidth.toString()" [id]="'width'" [subscriberFuncs]="setGridWidthFuncs"--></input-number>
-  <input-number [data]="getInpMunElemByName('height')" ><!--[labelText]="'výška:'" [defValue]="this.gridService.defaultHeight.toString()" [id]="'height'" [subscriberFuncs]="setGridHeightFuncs"--></input-number>
-  <input-number [data]="getInpMunElemByName('inRow')" ><!--[labelText]="'v řadě:'" [defValue]="this.gridService.defaultInRow.toString()" [id]="'in-row'" [subscriberFuncs]="setInRowFuncs" [additionalArgsFactory]="createChWM"--></input-number>
+  <input-number [data]="getInpMunElemByName('width')"></input-number>
+  <input-number [data]="getInpMunElemByName('height')"></input-number>
+  <input-number [data]="getInpMunElemByName('inRow')"></input-number>
+
+  <switch-button></switch-button>
 </div>

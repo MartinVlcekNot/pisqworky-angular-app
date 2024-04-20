@@ -30,11 +30,11 @@ export class PlayerDirector {
   }
 
   public play(cell: IPlayable) {
-    //let chance = Math.random() * 3
+    let chance = Math.random() * 5
 
-    /*if (chance < 1)
+    if (chance < 1)
       cell.symbol = Symbols.symbFrom(Symbol.wall).toOwnerSymbol();
-    else*/
+    else
       cell.symbol = cell.infer;
 
     cell.gridPlayerD?.switchPlayer();

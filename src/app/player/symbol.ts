@@ -26,17 +26,19 @@ export class ClassifiedSymbol {
   forOpt: Array<Owner>;
   clsToken: ClassifierToken;
   textOut: string;
+  src?: string;
 
-  constructor(represent: Symbol, forOpt: Array<Owner>, clsToken: ClassifierToken, textOut: string) {
+  constructor(represent: Symbol, forOpt: Array<Owner>, clsToken: ClassifierToken, textOut: string, src?: string) {
     this.represent = represent;
     this.forOpt = forOpt;
     this.clsToken = clsToken;
     this.textOut = textOut;
+    this.src = src;
   }
 
   public toOwnerSymbol(): OwnerSymbol {
     if (this.forOpt.length > 0)
-      return { represent: this.represent, for: this.forOpt[0], textOut: this.textOut };
+      return { represent: this.represent, for: this.forOpt[0], textOut: this.textOut, src: this.src };
 
     return Symbols.N;
   }
@@ -45,7 +47,8 @@ export class ClassifiedSymbol {
 export type OwnerSymbol = {
   represent: Symbol;
   for: Owner;
-  textOut: string
+  textOut: string;
+  src?: string;
 }
 
 export class Symbols {
@@ -61,13 +64,13 @@ export class Symbols {
       Symbol.none,
       [Owner.nobody],
       ClassifierToken.primary,
-      ""
+      "",
     ),
     new ClassifiedSymbol(
       Symbol.cross,
       [Owner.cross],
       ClassifierToken.primary,
-      "X"
+      "X",
     ),
     new ClassifiedSymbol(
       Symbol.circle,
@@ -79,7 +82,7 @@ export class Symbols {
       Symbol.wall,
       [Owner.nobody],
       ClassifierToken.special,
-      "[]"
+      "="
     ),
   ];
 

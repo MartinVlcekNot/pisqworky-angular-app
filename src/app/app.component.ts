@@ -5,7 +5,6 @@ import { GridComponent } from './grid/grid.component';
 import { CellService } from './cell/cell.service';
 import { IBValueChangeArgs } from './input-box/input-box.component';
 import { OptionsElem } from './game-options/game-options.component';
-import { InputNumElem } from './input-box/input-number/input-number.component';
 
 // Komponent 'AppComponent' je kontejnerem celého uživatelského rozhraní.
 //
@@ -113,7 +112,7 @@ export class AppComponent implements IBoundsStyle {
   public get PlayAreaPxWidth(): number {
     let pxw = GridService.getGridById(this.gridId)?.pxWidth;
 
-    if (pxw !== undefined)
+    if (pxw)
       return pxw;
     else
       return 481;

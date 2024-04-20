@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Owner } from '../player/symbol';
 import { GridRow } from '../grid/gridRow/gridRow';
-import { Cell, CheckWinManager, Cpos } from './cell';
+import { Cell, Cpos } from './cell';
 import { GridComponent } from '../grid/grid.component';
 import { RowProvider } from '../grid/grid.service';
 import { Pos } from '../position/posClass';
@@ -21,18 +21,6 @@ export class CellService {
 
   // velikost buňky v px
   public readonly cellBounds = 32;
-
-  // vrátí symbol reprezentující vlastníka buňky
-  getSymbol(owner: Owner): string {
-    switch (owner) {
-      case Owner.cross:
-        return 'X';
-      case Owner.circle:
-        return 'O';
-      default:
-        return '';
-    }
-  }
 
   // vrátí stylovou třídu podle vlastníka buňky
   public getOwnerClass(owner: Owner): string {

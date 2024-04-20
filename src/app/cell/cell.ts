@@ -1,5 +1,5 @@
 import { CellService } from './cell.service';
-import { ClassifiedSymbol, Owner, OwnerSymbol, Symbols } from '../player/symbol';
+import { ClassifiedSymbol, Owner, OwnerSymbol, Symbol, Symbols } from '../player/symbol';
 import { GridRow } from '../grid/gridRow/gridRow';
 import { IPos } from '../position/posInterface';
 import { Pos } from '../position/posClass';
@@ -22,6 +22,7 @@ import { PlayerDirector } from '../player/playerDirector';
 //    '../position/posInterface.IPos<Cpos>' viz '../position/posInterface.IPos'
 //    '../parent/parentInterface.IChildOf<../grid/gridRow/gridRow.GridRow>' viz '../parent/parentInterface.IChildOf'
 //    viz '../../styleClassManagement/classManagementInterface.IClassManagement'
+//    viz 'IPlayable'
 
 export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IPlayable {
 
@@ -44,7 +45,6 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
   }
   private onShellChanged = (sender: object | undefined, args: { shellValue: CellShellComponent | undefined }) => {
     this.toggleClasses();
-
     this.enableInteraction();
   }
 
@@ -55,8 +55,14 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
   private set symbol(value: OwnerSymbol) {
     this._symbol = value;
 
-    if (this.shell !== undefined)
+    if (this.shell) {
+      if (this.symbol.src)
+        this.shell.setSrcRef(this.symbol.src);
+      else
+        this.shell.srcRef = Symbol[this.symbol.represent];
+
       this.shell.symbol = this.symbol.textOut;
+    }
   }
 
   public get gridPlayerD(): PlayerDirector | undefined {
@@ -187,7 +193,7 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
       if (grid !== undefined)
         this.gridService.disableAllCells(grid);
 
-      console.log("vyhrává " + this.symbol + "!!!");
+      console.log("vyhrává " + Symbol[this.symbol.represent] + "!!!");
 
       // vizualizace
       this.addClasses([this.cellService.getOwnerClass(this.symbol.for)]);

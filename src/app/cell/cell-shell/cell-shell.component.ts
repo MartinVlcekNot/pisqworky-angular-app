@@ -46,7 +46,7 @@ export class CellShellComponent implements IBoundsStyle {
     return CellShellComponent.baseClassString + " " + this.classString;
   }
 
-  // symbol, který se zobrazí uprostřed vizuální reprezentace tohoto komponentu
+  // symbol, který se zobrazí jako alternativní text k obrázku
   // předáno v dynamickém kontextu v šabloně tohoto komponentu
   public symbol: string = '';
 
@@ -58,6 +58,16 @@ export class CellShellComponent implements IBoundsStyle {
   // viz rozhraní '../../boundsStyleInterface.IBoundsStyle'
   public get boundsStyle() {
     return "width: " + this.bounds + "px; height: " + this.bounds + "px;";
+  }
+
+  private _srcRef = "";
+  public get srcRef() { return this._srcRef }
+  public set srcRef(value: string) {
+    this._srcRef = `../../../assets/images/${value}.png`;
+  }
+
+  public setSrcRef(value: string) {
+    this._srcRef = value;
   }
 
   constructor(private cellService: CellService) {
