@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Owner } from '../player/owner';
+import { Owner } from '../player/symbol';
 import { GridRow } from '../grid/gridRow/gridRow';
 import { Cell, CheckWinManager, Cpos } from './cell';
 import { GridComponent } from '../grid/grid.component';
 import { RowProvider } from '../grid/grid.service';
 import { Pos } from '../position/posClass';
 import { IPos } from '../position/posInterface';
+import { PlayerDirector } from '../player/playerDirector';
 
 // Servis 'CellService' obsahuje řadu metod z největší části pro takové operace s datovými schránkami './cell.Cell',
 // které jsou mimo záležitosti samotné buňky. Také je zde místo pro konstantní pole, týkající se vlastnosti buněk, používaná napříč celou aplikací.
@@ -101,8 +102,8 @@ export class CellService {
 
   // vrátí hráče typu '../player/owner.Owner' z rodičovské mřížky buňky, pokud rodičovský komponent existuje
   // vrátí undefined, pokud rodičovský komponent neexistuje
-  public getGridPlayer(cell: Cell): Owner | undefined {
-    return this.getGridByCell(cell)?.player.player;
+  public getGridPlayerD(cell: Cell): PlayerDirector | undefined {
+    return this.getGridByCell(cell)?.playerDirector;
   }
 
   // vrátí pravdu, jesliže některá z dceřiných buněk komponentu '../grid/(grid.component).GridComponent' leží na daných souřadnicích
@@ -117,7 +118,7 @@ export class CellService {
     return false;
   }
 
-  // <metody rozhodující o vítězství>
+  // <algoritmus rozhodující o vítězství>
 
   // vrátí pole stejných symbolů jdoucích v daném směru neprodleně za sebou
   // posCell: buňka typu './cell.Cell', na které je počáteční pozice
@@ -128,7 +129,7 @@ export class CellService {
     let line: Array<Cell> = [];
 
     if (grid !== undefined) {
-      let owner = posCell.owner;
+      let owner = posCell.symbol.for;
 
       if (owner !== Owner.nobody) {
         for (let i = 1; i <= inLine - 1; i++) {
@@ -139,7 +140,7 @@ export class CellService {
             if (this.isInBounds(grid, new Pos(new Cpos(row, column)))) {
               let cell = grid.grid[row].row[column];
 
-              if (cell.owner === owner) {
+              if (cell.symbol.for === owner) {
                 line.push(cell);
               }
               else
@@ -163,7 +164,7 @@ export class CellService {
   private getInLine(posCell: Cell, direction: Dir, inLine: number): Cell[] {
     let line: Array<Cell> = [];
 
-    if (posCell.owner !== Owner.nobody)
+    if (posCell.symbol.for !== Owner.nobody)
       line.push(posCell);
 
     line = [...line, ...this.getDirection(posCell, direction, inLine)]
@@ -183,7 +184,7 @@ export class CellService {
     { down: 1, right: 1 }
   ];
 
-  // pomocí vynásobení vektoru vec*(-1) se dá dostat všech osm směrů
+  // pomocí vynásobení vektoru vec*(-1) se dá dostat všech osmi směrů
   private invertDirection(direction: Dir): Dir {
     return { down: -direction.down, right: -direction.right };
   }
@@ -207,7 +208,7 @@ export class CellService {
     return line;
   }
 
-  // </metody rozhodující o vítězství>
+  // </algoritmus rozhodující o vítězství>
 }
 
 export type Dir = {

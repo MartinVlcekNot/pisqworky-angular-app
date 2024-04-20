@@ -4,7 +4,7 @@ import { GridRow } from './gridRow/gridRow';
 import { Event } from '../../eventHandler/event';
 import { IBoundsStyle } from '../boundsStyle/boundsStyleInterface';
 import { CellService } from '../cell/cell.service';
-import { Player } from '../player/player';
+import { PlayerDirector } from '../player/playerDirector';
 import { ClassManagementService } from '../../styleClassManagement/class-management.service';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
 
@@ -119,17 +119,16 @@ export class GridComponent implements IBoundsStyle {
   private set grid(value: Array<GridRow>) { this._grid = value; }
 
   // hráč na tahu v konkrétní mřížce
-  private _player: Player = new Player();
-  public get player() { return this._player; }
+  public readonly playerDirector: PlayerDirector;
 
   // přepne hráče na tahu
   public switchPlayer() {
-    this.player.switchPlayer();
+    this.playerDirector.switchPlayer();
   }
 
   // nastaví hráče na tahu na výchozí hodnotu viz '../player/player.Player';
   public resetPlayer() {
-    this.player.resetPlayer();
+    this.playerDirector.resetPlayer();
   }
 
   public constructor(private gridService: GridService, public cellService: CellService, public cmService: ClassManagementService) {
@@ -138,10 +137,12 @@ export class GridComponent implements IBoundsStyle {
     GridService.idGridBase.push({ id: id, inst: this });
     //
 
+    this.playerDirector = new PlayerDirector();
+
     this.heightChange.addSubscriber(this.onHeightChanged);
 
     this.width = gridService.defaultWidth;
     this.height = gridService.defaultHeight;
-    this.player.setUp();
+    this.playerDirector.setUp();
   }
 }

@@ -15,9 +15,9 @@ import { IBValueChangeArgs } from '../input-box/input-box.component';
 export class GridService {
 
   // výchozí hodnoty pro počet sloupců, počet řádků, počet za sebou jdoucích znaků potřebných k výhře
-  public defaultWidth = 15;
-  public defaultHeight = 15;
-  public defaultInRow = 5;
+  public readonly defaultWidth = 15;
+  public readonly defaultHeight = 15;
+  public readonly defaultInRow = 5;
 
   // databáze na registrování a ukládání mřížek './(grid.component).GridComponent'
   private static _idGridBase: Array<{ id: number, inst: GridComponent }> = [];

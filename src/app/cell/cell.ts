@@ -1,9 +1,9 @@
 import { CellService } from './cell.service';
-import { Owner } from '../player/owner';
+import { ClassifiedSymbol, Owner, OwnerSymbol, Symbols } from '../player/symbol';
 import { GridRow } from '../grid/gridRow/gridRow';
 import { IPos } from '../position/posInterface';
 import { Pos } from '../position/posClass';
-import { IParent } from '../parent/parentInterface';
+import { IChildOf } from '../parent/parentInterface';
 import { Parent } from '../parent/parentClass';
 import { CellShellComponent } from './cell-shell/cell-shell.component';
 import { Event } from '../../eventHandler/event';
@@ -11,6 +11,8 @@ import { GridService } from '../grid/grid.service';
 import { ClassManagementService } from '../../styleClassManagement/class-management.service';
 import { IClassManagement } from '../../styleClassManagement/classManagementInterface';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
+import { IPlayable } from '../player/playableInterface';
+import { PlayerDirector } from '../player/playerDirector';
 
 // Třída 'Cell' slouží jako schránka pro data a operace potřebné pro chod komponentu './cell-shell/cell-shell.component.CellShellComponent'.
 // N instancí 'Cell' je generováno v případě, že dojde ke změně šířky mřížky '../grid/(grid.component).GridComponent' a tato změna
@@ -18,10 +20,10 @@ import { IBValueChangeArgs } from '../input-box/input-box.component';
 //
 // Implementuje rozhraní
 //    '../position/posInterface.IPos<Cpos>' viz '../position/posInterface.IPos'
-//    '../parent/parentInterface.IParent<../grid/gridRow/gridRow.GridRow>' viz '../parent/parentInterface.IParent'
+//    '../parent/parentInterface.IChildOf<../grid/gridRow/gridRow.GridRow>' viz '../parent/parentInterface.IChildOf'
 //    viz '../../styleClassManagement/classManagementInterface.IClassManagement'
 
-export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
+export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IPlayable {
 
   // komponent './cell-shell/cell-shell.component.CellShellComponent', který v sobě tento objekt zapouzdří
   private _shell: CellShellComponent | undefined;
@@ -46,24 +48,26 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.enableInteraction();
   }
 
-  // symbol reprezentující vlastníka této buňky
-  // při každém přiřazení se jeho hodnota propíše do pole 'this.shell.symbol'
-  private _symbol: string = '';
+  // vlastník této buňky typu '../player/symbol.ClassifiedSymbol'
+  // vlastnost set nastaví i symbol schránky
+  private _symbol: OwnerSymbol = Symbols.N;
   public get symbol() { return this._symbol; }
-  private set symbol(value: string) {
+  private set symbol(value: OwnerSymbol) {
     this._symbol = value;
 
     if (this.shell !== undefined)
-      this.shell.symbol = this.symbol;
+      this.shell.symbol = this.symbol.textOut;
   }
 
-  // vlastník této buňky typu '../player/owner.Owner'
-  // vlastnost set nastaví i symbol
-  private _owner = Owner.nobody;
-  public get owner() { return this._owner; }
-  public set owner(value: Owner) {
-    this._owner = value;
-    this.symbol = this.cellService.getSymbol(this.owner);
+  public get gridPlayerD(): PlayerDirector | undefined {
+    return this.cellService.getGridPlayerD(this);
+  }
+
+  public get infer(): OwnerSymbol {
+    if (this.gridPlayerD)
+      return Symbols.getPrimary(this.gridPlayerD.player);
+
+    return Symbols.N;
   }
 
   // určuje, zda buňka reaguje na podněty ze strany uživatele
@@ -109,7 +113,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
   // viz '../position/posInterface.IPos'
   public posObj: Pos<Cpos> = new Pos(new Cpos());
 
-  // viz '../parent/parentInterface.IParent'
+  // viz '../parent/parentInterface.IChildOf'
   public parentObj: Parent<GridRow> = new Parent();
 
   // zavolá se tehdy, když nastane událost 'this.parentObj.parentChange'
@@ -167,7 +171,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     this.enableInteraction();
 
     // nastaví i symbol
-    this.owner = Owner.nobody;
+    this.symbol = Symbols.N;
 
     this.clearClasses();
     this.addClasses(this.cellService.defaultClasses);
@@ -186,7 +190,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
       console.log("vyhrává " + this.symbol + "!!!");
 
       // vizualizace
-      this.addClasses([this.cellService.getOwnerClass(this.owner)]);
+      this.addClasses([this.cellService.getOwnerClass(this.symbol.for)]);
       if (grid !== undefined) {
         this.gridService.setClassesExceptOf(grid, line, ["owner-cross", "owner-circle", "inactive"], false);
         this.gridService.setClassesExceptOf(grid, line, ["owner-neutral"], true);
@@ -200,6 +204,8 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
   }
 
   constructor(private cellService: CellService, private gridService: GridService, private cmService: ClassManagementService) {
+    this.symbol = Symbols.N;
+
     this.parentObj.parentChange.addSubscriber(this.onParentChanged);
     this.shellChange.addSubscriber(this.onShellChanged);
 
@@ -209,12 +215,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
 
   // volá se při kliknutí do buňky, když je buňka ve stavu, kdy reaguje na podněty ze strany uživatele
   clickEnabled = () => {
-    let owner = this.cellService.getGridPlayer(this);
-
-    if (owner !== undefined)
-      this.owner = owner;
-
-    this.cellService.switchGridPlayer(this);
+    this.gridPlayerD?.play(this);
 
     // vizualizace
     //
@@ -235,7 +236,7 @@ export class Cell implements IPos<Cpos>, IParent<GridRow>, IClassManagement {
     else
       this.checkWin();
 
-    this.addClasses(["active", this.cellService.getOwnerClass(this.owner)]);
+    this.addClasses(["active", this.cellService.getOwnerClass(this.symbol.for)]);
     if (grid !== undefined)
       this.gridService.setClassesExceptOf(grid, [this], ["active"], false);
     //

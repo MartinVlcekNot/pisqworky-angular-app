@@ -1,9 +1,10 @@
-import { Owner } from './owner';
+import { IPlayable } from './playableInterface';
+import { Owner, Symbol, Symbols } from './symbol';
 
-// Třída 'Player' poskytuje funkcionalitu spojenou s hráčem na tahu v hracím poli.
+// Třída 'PlayerDirector' poskytuje funkcionalitu spojenou s hráčem na tahu v hracím poli.
 // Nezávislí hráči (např. jiných hracích polí) nesmí být stejné instance
 
-export class Player {
+export class PlayerDirector {
 
   // hráč na tahu
   private _player = Owner.cross;
@@ -26,5 +27,16 @@ export class Player {
       this.player = Owner.cross;
     else if (this.player === Owner.cross)
       this.player = Owner.circle;
+  }
+
+  public play(cell: IPlayable) {
+    //let chance = Math.random() * 3
+
+    /*if (chance < 1)
+      cell.symbol = Symbols.symbFrom(Symbol.wall).toOwnerSymbol();
+    else*/
+      cell.symbol = cell.infer;
+
+    cell.gridPlayerD?.switchPlayer();
   }
 }

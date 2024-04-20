@@ -5,7 +5,7 @@ import { CellService } from "../../cell/cell.service";
 import { Event } from "../../../eventHandler/event";
 import { IPos } from "../../position/posInterface";
 import { Pos } from "../../position/posClass";
-import { IParent } from "../../parent/parentInterface";
+import { IChildOf } from "../../parent/parentInterface";
 import { Parent } from "../../parent/parentClass";
 import { ClassManagementService } from "../../../styleClassManagement/class-management.service";
 
@@ -15,9 +15,9 @@ import { ClassManagementService } from "../../../styleClassManagement/class-mana
 //
 // Implementuje rozhraní
 //    '../../position/posInterface.IPos<Rpos>' viz '../../position/posInterface.IPos'
-//    '../../parent/parentInterface.IParent<../(grid.component).GridComponent>' viz '../../parent/parentInterface.IParent'
+//    '../../parent/parentInterface.IChildOf<../(grid.component).GridComponent>' viz '../../parent/parentInterface.IChildOf'
 
-export class GridRow implements IPos<Rpos>, IParent<GridComponent> {
+export class GridRow implements IPos<Rpos>, IChildOf<GridComponent> {
 
   // šířka řádku, tj kolik buněk '../../cell/cell.Cell' obsahuje
   private _width: number = 0;
@@ -50,7 +50,7 @@ export class GridRow implements IPos<Rpos>, IParent<GridComponent> {
   private _posObj: Pos<Rpos> = new Pos(new Rpos());
   public get posObj(): Pos<Rpos> { return this._posObj; }
 
-  // viz '../../parent/parentInterface.IParent'
+  // viz '../../parent/parentInterface.IChildOf'
   public parentObj: Parent<GridComponent> = new Parent();
 
   // zavolá se tehdy, když nastane událost 'this.parentObj.parentChange'
