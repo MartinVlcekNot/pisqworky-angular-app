@@ -1,13 +1,6 @@
-.owner-cross {
-  color: #3065bb;
-}
-
-.owner-circle {
-  color: #dd3658;
-}
-
-.owner-neutral {
-  color: #bbbbbb;
+.irrelevant {
+  /*-webkit-filter: grayscale(100%);*/
+  filter: grayscale(100%) brightness(95%);
 }
 
 .inactive {

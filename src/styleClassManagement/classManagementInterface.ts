@@ -1,3 +1,5 @@
+import { ClassManagementService } from "./class-management.service";
+
 // Dynamicky operované třídy viz './(class-mangement.service).ClassManagementService'.
 
 export interface IClassManagement {
@@ -10,4 +12,6 @@ export interface IClassManagement {
   // tato metoda by měla upravit hodnotu atributu 'class' daného objektu (komponentu), aby všechny dynamicky operované stylové třídy seděly
   // jejich aktuálnímu výčtu
   toggleClasses(): void;
+
+  classManagementService: ClassManagementService;
 }

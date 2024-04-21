@@ -70,7 +70,7 @@ export class InputBoxComponent<T> implements IClassManagement {
   // stylové třídy zformátuje a uloží je do pole 'this.classString'
   // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   public toggleClasses() {
-    this.classString = this.cmService.formatClasses(this.classes);
+    this.classString = this.classManagementService.formatClasses(this.classes);
   }
 
   // řetězec všech dynamicky operovaných tříd v reálném čase pro atribut 'class' v HTML kontextu
@@ -78,14 +78,14 @@ export class InputBoxComponent<T> implements IClassManagement {
 
   // učiní komponent nevalidním (hlavně z vizuálního hlediska)
   public invalidate() {
-    this.cmService.addClasses(this, ["input-num-invalid"]);
-    this.cmService.removeClasses(this, ["input-num-valid"]);
+    this.classManagementService.addClasses(this, ["input-num-invalid"]);
+    this.classManagementService.removeClasses(this, ["input-num-valid"]);
   }
 
   // učiní komponent validním (hlavně z vizuálního hlediska)
   public validate() {
-    this.cmService.addClasses(this, ["input-num-valid"]);
-    this.cmService.removeClasses(this, ["input-num-invalid"]);
+    this.classManagementService.addClasses(this, ["input-num-valid"]);
+    this.classManagementService.removeClasses(this, ["input-num-invalid"]);
   }
 
   // pole pro objekt s pravidly pro validaci zadané hodnoty
@@ -197,8 +197,11 @@ export class InputBoxComponent<T> implements IClassManagement {
     }
   }
 
-  public constructor(protected cmService: ClassManagementService) {
-    this.cmService.addClasses(this, ["input-num-valid"]);
+  public classManagementService: ClassManagementService;
+
+  public constructor(cmService: ClassManagementService) {
+    this.classManagementService = cmService;
+    this.classManagementService.addClasses(this, ["input-num-valid"]);
   }
 }
 

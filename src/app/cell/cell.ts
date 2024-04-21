@@ -13,6 +13,8 @@ import { IClassManagement } from '../../styleClassManagement/classManagementInte
 import { IBValueChangeArgs } from '../input-box/input-box.component';
 import { IPlayable } from '../player/playableInterface';
 import { PlayerDirector } from '../player/playerDirector';
+import { IGridCell } from '../grid/gridCellInterface';
+import { GridComponent } from '../grid/grid.component';
 
 // Třída 'Cell' slouží jako schránka pro data a operace potřebné pro chod komponentu './cell-shell/cell-shell.component.CellShellComponent'.
 // N instancí 'Cell' je generováno v případě, že dojde ke změně šířky mřížky '../grid/(grid.component).GridComponent' a tato změna
@@ -24,7 +26,7 @@ import { PlayerDirector } from '../player/playerDirector';
 //    viz '../../styleClassManagement/classManagementInterface.IClassManagement'
 //    viz 'IPlayable'
 
-export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IPlayable {
+export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IPlayable, IGridCell {
 
   // komponent './cell-shell/cell-shell.component.CellShellComponent', který v sobě tento objekt zapouzdří
   private _shell: CellShellComponent | undefined;
@@ -59,11 +61,13 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
       if (this.symbol.src)
         this.shell.setSrcRef(this.symbol.src);
       else
-        this.shell.srcRef = Symbol[this.symbol.represent];
+        this.shell.srcRef = Symbols.obtainSrcFor(this.symbol);
 
       this.shell.symbol = this.symbol.textOut;
     }
   }
+
+  public classManagementService: ClassManagementService;
 
   public get gridPlayerD(): PlayerDirector | undefined {
     return this.cellService.getGridPlayerD(this);
@@ -74,6 +78,10 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
       return Symbols.getPrimary(this.gridPlayerD.player);
 
     return Symbols.N;
+  }
+
+  public get grid(): GridComponent | undefined {
+    return this.cellService.getGridByCell(this);
   }
 
   // určuje, zda buňka reaguje na podněty ze strany uživatele
@@ -105,7 +113,7 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
   // přídavná metoda pro eventhandler v komponentu '../input-box/(input-box.component).InputBoxComponent'
   // může externě nastavit 'this.inRow'
   public setInRowExt = (sender: object | undefined, args: IBValueChangeArgs<number>) => {
-    if (args.value !== undefined)
+    if (args.value)
       this.inRow = args.value;
 
     if (this.allowCheckingWin) {
@@ -117,7 +125,7 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
   }
 
   // viz '../position/posInterface.IPos'
-  public posObj: Pos<Cpos> = new Pos(new Cpos());
+  public posObj: Pos<CPos> = new Pos(new CPos());
 
   // viz '../parent/parentInterface.IChildOf'
   public parentObj: Parent<GridRow> = new Parent();
@@ -150,7 +158,7 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
   // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   public toggleClasses(): boolean {
     if (this.shell !== undefined) {
-      this.shell.classString = this.cmService.formatClasses(this.classes);
+      this.shell.classString = this.classManagementService.formatClasses(this.classes);
 
       return true;
     }
@@ -160,15 +168,15 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
 
   // <operace se stylovými třídami>
   public addClasses(classes: Array<string>) {
-    this.cmService.addClasses(this, classes);
+    this.classManagementService.addClasses(this, classes);
   }
 
   public removeClasses(classes: Array<string>) {
-    this.cmService.removeClasses(this, classes);
+    this.classManagementService.removeClasses(this, classes);
   }
 
   public clearClasses() {
-    this.cmService.clearClasses(this);
+    this.classManagementService.clearClasses(this);
   }
   // </operace se stylovými třídami>
 
@@ -176,7 +184,6 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
   public clearAndSetUp() {
     this.enableInteraction();
 
-    // nastaví i symbol
     this.symbol = Symbols.N;
 
     this.clearClasses();
@@ -188,20 +195,16 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
     let line = this.cellService.checkDirections(this, this.cellService.directions, this.inRow)
 
     if (line.length >= this.inRow) {
-      let grid = this.cellService.getGridByCell(this);
+      if (this.grid) {
+        this.gridService.disableAllCells(this.grid);
 
-      if (grid !== undefined)
-        this.gridService.disableAllCells(grid);
+        console.log("vyhrává " + Symbol[this.symbol.represent] + "!!!");
 
-      console.log("vyhrává " + Symbol[this.symbol.represent] + "!!!");
-
-      // vizualizace
-      this.addClasses([this.cellService.getOwnerClass(this.symbol.for)]);
-      if (grid !== undefined) {
-        this.gridService.setClassesExceptOf(grid, line, ["owner-cross", "owner-circle", "inactive"], false);
-        this.gridService.setClassesExceptOf(grid, line, ["owner-neutral"], true);
+        // vizualizace
+        this.gridService.setClassesExceptOf(line, ["inactive"], false);
+        this.gridService.setClassesExceptOf(line, ["irrelevant"], true);
+        // konec vizualizace
       }
-      // konec vizualizace
 
       return true;
     }
@@ -209,8 +212,9 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
       return false;
   }
 
-  constructor(private cellService: CellService, private gridService: GridService, private cmService: ClassManagementService) {
+  constructor(private cellService: CellService, private gridService: GridService, cmService: ClassManagementService) {
     this.symbol = Symbols.N;
+    this.classManagementService = cmService;
 
     this.parentObj.parentChange.addSubscriber(this.onParentChanged);
     this.shellChange.addSubscriber(this.onShellChanged);
@@ -224,34 +228,18 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
     this.gridPlayerD?.play(this);
 
     // vizualizace
-    //
-    // třídy této buňky =
-    // { "inactive" }
-    //
-    // třídy ostatních buněk =
-    // { ("inactive" | "active"); *"owner-{symbol}" }
-    //
     this.removeClasses(["inactive"]);
 
-    let grid = this.cellService.getGridByCell(this);
-
-    if (grid !== undefined) {
-      let checkWinManager = this.gridService.createChWM(grid);
+    if (this.grid) {
+      let checkWinManager = this.gridService.createChWM(this.grid);
       checkWinManager.winFound = this.checkWin();
     }
     else
       this.checkWin();
 
-    this.addClasses(["active", this.cellService.getOwnerClass(this.symbol.for)]);
-    if (grid !== undefined)
-      this.gridService.setClassesExceptOf(grid, [this], ["active"], false);
-    //
-    // třídy této buňky =
-    // { "active"; "owner-{symbol}" }
-    //
-    // třídy ostatních buněk =
-    // { "inactive"; *"owner-{symbol}" }
-    //
+    this.addClasses(["active"]);
+    if (this.grid)
+      this.gridService.setClassesExceptOf([this], ["active"], false);
     // konec vizualizace
 
     this.disableInteraction();
@@ -264,7 +252,7 @@ export class Cell implements IPos<Cpos>, IChildOf<GridRow>, IClassManagement, IP
 }
 
 // typ souřadnic používaný v 'Cell'
-export class Cpos {
+export class CPos {
 
   private _row: number | undefined;
   public get row(): number | undefined { return this._row; }

@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { GridComponent } from './grid.component';
 import { GridRow } from './gridRow/gridRow';
-import { Cell, CheckWinManager, Cpos } from '../cell/cell';
+import { Cell, CheckWinManager, CPos } from '../cell/cell';
 import { Pos } from '../position/posClass';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
+import { IGridCell } from './gridCellInterface';
+import { IClassManagement } from '../../styleClassManagement/classManagementInterface';
 
 // Servis 'GridService' obsahuje řadu metod z největší části pro operace s hracími poli './(grid.component).GridComponent' a pro hledání datových
 // schránek '../cell/cell.Cell' buněk podle určitých požadavků.
@@ -54,7 +56,7 @@ export class GridService {
   }
 
   // vždy unikátní id
-  public get originalId() {
+  public get uniqueId() {
     let ids: Array<number> = [];
 
     GridService.idGridBase.forEach((pair) => {
@@ -67,6 +69,9 @@ export class GridService {
 
       return findNewId(startId + 1);
     }
+
+    if (ids.length > 0)
+      return findNewId(ids[ids.length - 1]);
 
     return findNewId(0);
   }
@@ -141,30 +146,39 @@ export class GridService {
 
   // nastaví stylové třídy všech buněk '../cell/cell.Cell' vyjma zadaných buněk v zadané mřížce './(grid.component).GridComponent'
   // add: true -> přidá třídy; false -> odebere třídy
-  public setClassesExceptOf(grid: GridComponent, excCells: Array<Cell>, classes: Array<string>, add: boolean) {
-    this.forEachCell(grid, (cell) => {
-      if (excCells.includes(cell))
-        var exceptional = true;
-      else
-        var exceptional = false
+  public setClassesExceptOf(excCells: Array<IGridCell>, classes: Array<string>, add: boolean) {
+    let grids: Array<GridComponent> = [];
 
-      if (!exceptional) {
-        if (add)
-          cell.addClasses(classes);
-        else
-          cell.removeClasses(classes);
-      }
+    excCells.forEach((excCell) => {
+      if (excCell.grid && !grids.includes(excCell.grid))
+        grids.push(excCell.grid);
+    });
+
+    grids.forEach((grid) => {
+      this.forEachCell(grid, (cell) => {
+        let exceptional = false;
+
+        if (excCells.includes(cell))
+          exceptional = true;
+
+        if (!exceptional) {
+          if (add)
+            cell.addClasses(classes);
+          else
+            cell.removeClasses(classes);
+        }
+      });
     });
   }
 
   // nastaví stylové třídy všech zadaných buněk '../cell/cell.Cell'
   // add: true -> přidá třídy; false -> odebere třídy
-  public setClassesOf(cells: Array<Cell>, classes: Array<string>, add: boolean) {
+  public setClassesOf(cells: Array<IClassManagement>, classes: Array<string>, add: boolean) {
     cells.forEach((cell) => {
       if (add)
-        cell.addClasses(classes);
+        cell.classManagementService.addClasses(cell, classes);
       else
-        cell.removeClasses(classes);
+        cell.classManagementService.removeClasses(cell, classes);
     });
   }
 
@@ -204,7 +218,7 @@ export class GridService {
   }
 
   // vrátí buňku '../cell/cell.Cell' v zadané mřížce './(grid.component).GridComponent' podle zadaných souřadnic
-  public getCellByPos(grid: GridComponent, pos: Pos<Cpos>): Cell | undefined {
+  public getCellByPos(grid: GridComponent, pos: Pos<CPos>): Cell | undefined {
     let wantedCell: Cell | undefined = undefined;
 
     this.forEachCell(grid, (cell) => {

@@ -14,6 +14,10 @@ export enum Symbol {
   circle,
   none,
   wall,
+  bomb,
+  rogue,
+  disguise,
+  patch,
 }
 
 export enum ClassifierToken {
@@ -22,11 +26,11 @@ export enum ClassifierToken {
 }
 
 export class ClassifiedSymbol {
-  represent: Symbol;
-  forOpt: Array<Owner>;
-  clsToken: ClassifierToken;
-  textOut: string;
-  src?: string;
+  public represent: Symbol;
+  public forOpt: Array<Owner>;
+  public clsToken: ClassifierToken;
+  public textOut: string;
+  public src?: string;
 
   constructor(represent: Symbol, forOpt: Array<Owner>, clsToken: ClassifierToken, textOut: string, src?: string) {
     this.represent = represent;
@@ -36,9 +40,17 @@ export class ClassifiedSymbol {
     this.src = src;
   }
 
-  public toOwnerSymbol(): OwnerSymbol {
-    if (this.forOpt.length > 0)
-      return { represent: this.represent, for: this.forOpt[0], textOut: this.textOut, src: this.src };
+  public toOwnerSymbol(owner?: Owner): OwnerSymbol {
+    if (this.forOpt.length > 0) {
+      if (owner && this.forOpt.includes(owner)) {
+        let symbol = this.toOwnerSymbol();
+        symbol.for = owner;
+
+        return symbol;
+      }
+      else
+        return { represent: this.represent, for: this.forOpt[0], textOut: this.textOut, src: this.src };
+    }
 
     return Symbols.N;
   }
@@ -57,7 +69,7 @@ export class Symbols {
     return this.symbFrom(Symbol.none);
   }
 
-  public static get N() { return this.none.toOwnerSymbol(); }
+  public static get N(): OwnerSymbol { return this.none.toOwnerSymbol(); }
 
   public static readonly symbArr: Array<ClassifiedSymbol> = [
     new ClassifiedSymbol(
@@ -84,6 +96,30 @@ export class Symbols {
       ClassifierToken.special,
       "="
     ),
+    new ClassifiedSymbol(
+      Symbol.bomb,
+      [Owner.nobody],
+      ClassifierToken.special,
+      "¤"
+    ),
+    new ClassifiedSymbol(
+      Symbol.rogue,
+      [Owner.cross, Owner.circle, Owner.nobody],
+      ClassifierToken.special,
+      "8"
+    ),
+    new ClassifiedSymbol(
+      Symbol.disguise,
+      [Owner.cross, Owner.circle],
+      ClassifierToken.special,
+      "Q"
+    ),
+    new ClassifiedSymbol(
+      Symbol.patch,
+      [Owner.cross, Owner.circle],
+      ClassifierToken.special,
+      "§"
+    )
   ];
 
   public static symbFrom(symbol: Symbol): ClassifiedSymbol {
@@ -108,10 +144,12 @@ export class Symbols {
     return this.N;
   }
 
-  public static ownerSymbFrom(clsSymbol: ClassifiedSymbol, owner: Owner) {
-    if (clsSymbol.forOpt.includes(owner))
-      return clsSymbol.toOwnerSymbol().for = owner;
+  public static obtainSrcFor(symbol: OwnerSymbol): string {
+    symbol.src = Symbol[symbol.represent];
 
-    return this.N;
+    if (this.symbFrom(symbol.represent).forOpt.length > 1)
+      symbol.src += `_o_${Symbol[symbol.for]}`;
+
+    return symbol.src;
   }
 }

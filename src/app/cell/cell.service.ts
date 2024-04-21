@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Owner } from '../player/symbol';
 import { GridRow } from '../grid/gridRow/gridRow';
-import { Cell, Cpos } from './cell';
+import { Cell, CPos } from './cell';
 import { GridComponent } from '../grid/grid.component';
 import { RowProvider } from '../grid/grid.service';
 import { Pos } from '../position/posClass';
 import { IPos } from '../position/posInterface';
 import { PlayerDirector } from '../player/playerDirector';
+import { IChildOf } from '../parent/parentInterface';
+import { IPlayable } from '../player/playableInterface';
+import { IGridCell } from '../grid/gridCellInterface';
 
 // Servis 'CellService' obsahuje řadu metod z největší části pro takové operace s datovými schránkami './cell.Cell',
 // které jsou mimo záležitosti samotné buňky. Také je zde místo pro konstantní pole, týkající se vlastnosti buněk, používaná napříč celou aplikací.
@@ -22,18 +25,6 @@ export class CellService {
   // velikost buňky v px
   public readonly cellBounds = 32;
 
-  // vrátí stylovou třídu podle vlastníka buňky
-  public getOwnerClass(owner: Owner): string {
-    switch (owner) {
-      case Owner.cross:
-        return "owner-cross";
-      case Owner.circle:
-        return "owner-circle";
-      case Owner.nobody:
-        return "owner-neutral";
-    }
-  }
-
   // továrna na vytváření instancí './cell.Cell'
   // parent: řádek v mřížce typu '../grid/gridRow/gridRow.GridRow', do kterého bude buňka přiřazena
   // rowProvider: objekt '../grid/(grid.service).RowProvider' určuje index v řadě
@@ -46,7 +37,7 @@ export class CellService {
   }
 
   // vrátí pravdu, jestliže jsou dva objekty typu '../position/posInterface.IPos<./cell.CPos>' stejné
-  public evaluatePosEquals(pos1: IPos<Cpos>, pos2: IPos<Cpos>): boolean {
+  public evaluatePosEquals(pos1: IPos<CPos>, pos2: IPos<CPos>): boolean {
     if (pos1.posObj.pos.row === pos2.posObj.pos.row && pos1.posObj.pos.column === pos2.posObj.pos.column)
       return true;
 
@@ -55,7 +46,7 @@ export class CellService {
 
   // vrátí rodičovský komponent '../grid/(grid.component).GridComponent' v případě, že existuje
   // vrátí undefined, když neexistuje
-  public getGridByCell(cell: Cell): GridComponent | undefined {
+  public getGridByCell(cell: IChildOf<GridRow>): GridComponent | undefined {
     let gridRow = cell.parentObj.parent;
 
     if (gridRow !== undefined) {
@@ -69,7 +60,7 @@ export class CellService {
 
   // vrátí id rodičovského komponentu '../grid/(grid.component).GridComponent' v případě, že existuje
   // vrátí -1, když rodičovský komponent neexistuje
-  public getParentGridId(cell: Cell): number {
+  public getParentGridId(cell: IChildOf<GridRow>): number {
     let grid = this.getGridByCell(cell);
 
     if (grid !== undefined)
@@ -79,18 +70,18 @@ export class CellService {
   }
 
   // přepne hráče v rodičovské mřížce buňky, pokud rodičovský komponent existuje
-  public switchGridPlayer(cell: Cell) {
+  public switchGridPlayer(cell: IChildOf<GridRow>) {
     this.getGridByCell(cell)?.switchPlayer();
   }
 
   // nastaví hráče v rodičovské mřížce buňky na výchozí hodnotu, pokud rodičovský komponent existuje
-  public resetGridPlayer(cell: Cell) {
+  public resetGridPlayer(cell: IChildOf<GridRow>) {
     this.getGridByCell(cell)?.resetPlayer();
   }
 
   // vrátí hráče typu '../player/owner.Owner' z rodičovské mřížky buňky, pokud rodičovský komponent existuje
   // vrátí undefined, pokud rodičovský komponent neexistuje
-  public getGridPlayerD(cell: Cell): PlayerDirector | undefined {
+  public getGridPlayerD(cell: IChildOf<GridRow>): PlayerDirector | undefined {
     return this.getGridByCell(cell)?.playerDirector;
   }
 
@@ -98,7 +89,7 @@ export class CellService {
   // typu '../position/posInterface.IPos<./cell.CPos>', tj. dané souřadnice neukazují na místo mimo mřížku.
   // grid: komponent mřížky typu '../grid/(grid.component).GridComponent'
   // pos: souřadnice typu '../position/posInterface.IPos<./cell.CPos>'
-  public isInBounds(grid: GridComponent, pos: IPos<Cpos>): boolean {
+  public isInBounds(grid: GridComponent, pos: IPos<CPos>): boolean {
     if (pos.posObj.pos.row !== undefined && pos.posObj.pos.column !== undefined) 
       if (pos.posObj.pos.row <= grid.height - 1 && pos.posObj.pos.row >= 0 && pos.posObj.pos.column <= grid.width - 1 && pos.posObj.pos.column >= 0)
         return true;
@@ -112,20 +103,20 @@ export class CellService {
   // posCell: buňka typu './cell.Cell', na které je počáteční pozice
   // direction: směr typu 'Dir', kterým se bude kontrola symbolů ubírat
   // inLine: počet buněk (včetně té počáteční), na kterém se kontrola symbolů zastaví a vrátí výsledek
-  private getDirection(posCell: Cell, direction: Dir, inLine: number): Cell[] {
-    let grid = this.getGridByCell(posCell);
+  private getDirection(posCell: IPlayable & IPos<CPos> & IGridCell, direction: Dir, inLine: number): Cell[] {
+    let grid = posCell.grid//this.getGridByCell(posCell);
     let line: Array<Cell> = [];
 
-    if (grid !== undefined) {
+    if (grid) {
       let owner = posCell.symbol.for;
 
       if (owner !== Owner.nobody) {
         for (let i = 1; i <= inLine - 1; i++) {
-          if (posCell.posObj.pos.column !== undefined && posCell.posObj.pos.row !== undefined) {
+          if (posCell.posObj.pos.column && posCell.posObj.pos.row !== undefined) {
             let column = posCell.posObj.pos.column - i * direction.down;
             let row = posCell.posObj.pos.row - i * direction.right;
 
-            if (this.isInBounds(grid, new Pos(new Cpos(row, column)))) {
+            if (this.isInBounds(grid, new Pos(new CPos(row, column)))) {
               let cell = grid.grid[row].row[column];
 
               if (cell.symbol.for === owner) {

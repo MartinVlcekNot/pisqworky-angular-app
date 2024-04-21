@@ -17,7 +17,7 @@ import { ClassManagementService } from "../../../styleClassManagement/class-mana
 //    '../../position/posInterface.IPos<Rpos>' viz '../../position/posInterface.IPos'
 //    '../../parent/parentInterface.IChildOf<../(grid.component).GridComponent>' viz '../../parent/parentInterface.IChildOf'
 
-export class GridRow implements IPos<Rpos>, IChildOf<GridComponent> {
+export class GridRow implements IPos<RPos>, IChildOf<GridComponent> {
 
   // šířka řádku, tj kolik buněk '../../cell/cell.Cell' obsahuje
   private _width: number = 0;
@@ -47,8 +47,8 @@ export class GridRow implements IPos<Rpos>, IChildOf<GridComponent> {
   }
 
   // viz '../../position/posInterface.IPos'
-  private _posObj: Pos<Rpos> = new Pos(new Rpos());
-  public get posObj(): Pos<Rpos> { return this._posObj; }
+  private _posObj: Pos<RPos> = new Pos(new RPos());
+  public get posObj(): Pos<RPos> { return this._posObj; }
 
   // viz '../../parent/parentInterface.IChildOf'
   public parentObj: Parent<GridComponent> = new Parent();
@@ -74,7 +74,7 @@ export class GridRow implements IPos<Rpos>, IChildOf<GridComponent> {
 }
 
 // typ souřadnic používaný v 'GridRow'
-class Rpos {
+class RPos {
 
   private _row: number | undefined;
   public get row(): number | undefined { return this._row; }

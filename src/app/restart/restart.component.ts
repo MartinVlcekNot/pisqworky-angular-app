@@ -29,8 +29,8 @@ export class RestartComponent {
   // navázáno na událost 'click' v šabloně tohoto komponentu
   protected onClick() {
     let grid = GridService.getGridById(this.gridId);
-
-    if (grid !== undefined)
+    console.log(grid);
+    if (grid)
       this.gridService.clearAndSetUpGrid(grid);
   }
 }

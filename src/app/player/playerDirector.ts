@@ -33,7 +33,7 @@ export class PlayerDirector {
     let chance = Math.random() * 5
 
     if (chance < 1)
-      cell.symbol = Symbols.symbFrom(Symbol.wall).toOwnerSymbol();
+      cell.symbol = Symbols.symbFrom(Symbol.bomb).toOwnerSymbol();
     else
       cell.symbol = cell.infer;
 

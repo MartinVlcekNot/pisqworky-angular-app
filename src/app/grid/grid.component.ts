@@ -133,7 +133,7 @@ export class GridComponent implements IBoundsStyle {
 
   public constructor(private gridService: GridService, public cellService: CellService, public cmService: ClassManagementService) {
     // vygeneruje unikátní id pro konkrétní mřížku a registruje ji
-    let id = this.gridService.originalId;
+    let id = this.gridService.uniqueId;
     GridService.idGridBase.push({ id: id, inst: this });
     //
 
