@@ -63,11 +63,7 @@ export class CellShellComponent implements IBoundsStyle {
   private _srcRef = "";
   public get srcRef() { return this._srcRef }
   public set srcRef(value: string) {
-    this._srcRef = `../../../assets/images/${value}.png`;
-  }
-
-  public setSrcRef(value: string) {
-    this._srcRef = value;
+    this._srcRef = `assets/images/${value}.png`;
   }
 
   constructor(private cellService: CellService) {

@@ -1,3 +1,4 @@
+import { Event } from '../../eventHandler/event';
 import { IPlayable } from './playableInterface';
 import { Owner, Symbol, Symbols } from './symbol';
 
@@ -9,7 +10,19 @@ export class PlayerDirector {
   // hráč na tahu
   private _player = Owner.cross;
   public get player() { return this._player; }
-  private set player(value: Owner) { this._player = value; }
+  private set player(value: Owner) {
+    let previous = this._player;
+
+    this._player = value;
+
+    if (this.player !== previous)
+      this.playerSwitched(this.player);
+  }
+
+  public playerSwitch: Event<{ playerValue: Owner }> = new Event();
+  private playerSwitched(curPlayer: Owner) {
+    this.playerSwitch.invoke(this, { playerValue: curPlayer });
+  }
 
   // nastaví hráče na začínajícího hráče
   public setUp() {

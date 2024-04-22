@@ -37,17 +37,20 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
     this._shell = value;
 
     if (this.shell !== previous)
-      this.shellChanged(this.shell);
+      this.attachedToShell(this.shell);
   }
 
   // událost nastávající tehdy, když se změní hodnota 'this._shell' skrze set vlastnost 'this.shell'
-  public shellChange: Event<{ shellValue: CellShellComponent | undefined }> = new Event;
-  private shellChanged(curShell: CellShellComponent | undefined) {
-    this.shellChange.invoke(this, { shellValue: curShell });
+  public shellAttach: Event<{ shellValue: CellShellComponent | undefined }> = new Event();
+  private attachedToShell(curShell: CellShellComponent | undefined) {
+    this.shellAttach.invoke(this, { shellValue: curShell });
   }
-  private onShellChanged = (sender: object | undefined, args: { shellValue: CellShellComponent | undefined }) => {
+  private onAttachedToShell = (sender: object | undefined, args: { shellValue: CellShellComponent | undefined }) => {
+    if (args.shellValue)
+      args.shellValue.onClick = this.onShellClick;
+
     this.toggleClasses();
-    this.enableInteraction();
+    this.userInteraction = true;
   }
 
   // vlastník této buňky typu '../player/symbol.ClassifiedSymbol'
@@ -58,16 +61,13 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
     this._symbol = value;
 
     if (this.shell) {
-      if (this.symbol.src)
-        this.shell.setSrcRef(this.symbol.src);
-      else
-        this.shell.srcRef = Symbols.obtainSrcFor(this.symbol);
+      this.shell.srcRef = Symbols.decodeSrc(this.symbol);
 
       this.shell.symbol = this.symbol.textOut;
     }
   }
 
-  public classManagementService: ClassManagementService;
+  public readonly classManagementService: ClassManagementService;
 
   public get gridPlayerD(): PlayerDirector | undefined {
     return this.cellService.getGridPlayerD(this);
@@ -85,23 +85,14 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
   }
 
   // určuje, zda buňka reaguje na podněty ze strany uživatele
-  public interactable = true;
 
-  // povolí interakci ze strany uživatele
-  public enableInteraction() {
-    if (this.shell !== undefined)
-      this.shell.onClick = this.clickEnabled;
+  private _interactable: boolean = false;
+  public get userInteraction(): boolean { return this._interactable; }
+  public set userInteraction(value: boolean) {
+    this._interactable = value;
 
-    this.interactable = true;
-    this.allowCheckingWin = true;
-  }
-
-  // zakáže interakci ze strany uživatele
-  public disableInteraction() {
-    if (this.shell !== undefined)
-      this.shell.onClick = this.clickDisabled;
-
-    this.interactable = false;
+    if (this.userInteraction)
+      this.allowCheckingWin = true;
   }
 
   // speciální případ interakce týkající se kontrolování vítězství
@@ -116,12 +107,8 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
     if (args.value)
       this.inRow = args.value;
 
-    if (this.allowCheckingWin) {
-      let checkWinManager = args.additionalArgs as CheckWinManager;
-
-      if (!checkWinManager.winFound)
-        checkWinManager.winFound = this.checkWin();
-    }
+    if (this.grid)
+      this.gridService.checkWin(this, args.additionalArgs as CheckWinManager);
   }
 
   // viz '../position/posInterface.IPos'
@@ -182,7 +169,7 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
 
   // nastaví buňku do počátečního stavu
   public clearAndSetUp() {
-    this.enableInteraction();
+    this.userInteraction = true;
 
     this.symbol = Symbols.N;
 
@@ -212,42 +199,37 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
       return false;
   }
 
-  constructor(private cellService: CellService, private gridService: GridService, cmService: ClassManagementService) {
+  constructor(private readonly cellService: CellService, private readonly gridService: GridService, cmService: ClassManagementService) {
     this.symbol = Symbols.N;
     this.classManagementService = cmService;
 
     this.parentObj.parentChange.addSubscriber(this.onParentChanged);
-    this.shellChange.addSubscriber(this.onShellChanged);
+    this.shellAttach.addSubscriber(this.onAttachedToShell);
 
     this.classes = this.cellService.defaultClasses;
-    this.enableInteraction();
   }
 
-  // volá se při kliknutí do buňky, když je buňka ve stavu, kdy reaguje na podněty ze strany uživatele
-  clickEnabled = () => {
-    this.gridPlayerD?.play(this);
+  public onShellClick = () => {
+    if (this.userInteraction) {
+      this.gridPlayerD?.play(this);
 
-    // vizualizace
-    this.removeClasses(["inactive"]);
+      // vizualizace
+      this.removeClasses(["inactive"]);
 
-    if (this.grid) {
-      let checkWinManager = this.gridService.createChWM(this.grid);
-      checkWinManager.winFound = this.checkWin();
+      if (this.grid) {
+        let checkWinManager = this.gridService.createChWM(this.grid);
+        checkWinManager.winFound = this.checkWin();
+      }
+      else
+        this.checkWin();
+
+      this.addClasses(["active"]);
+      if (this.grid)
+        this.gridService.setClassesExceptOf([this], ["active"], false);
+      // konec vizualizace
+
+      this.userInteraction = false;
     }
-    else
-      this.checkWin();
-
-    this.addClasses(["active"]);
-    if (this.grid)
-      this.gridService.setClassesExceptOf([this], ["active"], false);
-    // konec vizualizace
-
-    this.disableInteraction();
-  }
-
-  // volá se při kliknutí do buňky, když je buňka ve stavu, kdy nereaguje na podněty ze strany uživatele
-  clickDisabled = () => {
-    // nic se nestane
   }
 }
 

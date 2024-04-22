@@ -6,6 +6,7 @@ import { Pos } from '../position/posClass';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
 import { IGridCell } from './gridCellInterface';
 import { IClassManagement } from '../../styleClassManagement/classManagementInterface';
+import { PlayerDirector } from '../player/playerDirector';
 
 // Servis 'GridService' obsahuje řadu metod z největší části pro operace s hracími poli './(grid.component).GridComponent' a pro hledání datových
 // schránek '../cell/cell.Cell' buněk podle určitých požadavků.
@@ -114,6 +115,10 @@ export class GridService {
     return gridRow;
   }
 
+  public getGridPlayerD(grid: GridComponent): PlayerDirector {
+    return grid.playerDirector;
+  }
+
   // vrátí všechny buňky '../cell/cell.Cell' v mřížce './(grid.component).GridComponent', jejíž id se shoduje se zadaným id
   // vrátí prázdné pole, když není nalezena mřížka s id shodným se zadaným id
   public getAllCellsById(gridId: number): Array<Cell> {
@@ -187,9 +192,9 @@ export class GridService {
     this.forEachCell(grid, (cell) => {
       if (cell.shell !== undefined) {
         if (enabled)
-          cell.enableInteraction();
+          cell.userInteraction = true;
         else
-          cell.disableInteraction();
+          cell.userInteraction = false;
       }
     });
   }
@@ -230,6 +235,35 @@ export class GridService {
     });
 
     return wantedCell;
+  }
+
+  public checkGridWin(grid: GridComponent, checkWinManager?: CheckWinManager): boolean {
+    let checkWM: CheckWinManager;
+
+    if (checkWinManager)
+      checkWM = checkWinManager;
+    else
+      checkWM = this.createChWM(grid);
+
+    this.forEachCell(grid, (cell) => {
+        this.checkWin(cell, checkWM);
+    });
+
+    return checkWM.winFound;
+  }
+
+  public checkWin(cell: Cell, checkWinManager?: CheckWinManager): boolean {
+    if (cell.grid) {
+      if (!checkWinManager)
+        checkWinManager = this.createChWM(cell.grid);
+
+      if (cell.allowCheckingWin && !checkWinManager.winFound)
+        checkWinManager.winFound = cell.checkWin();
+
+      return checkWinManager.winFound;
+    }
+
+    return false;
   }
 
   // uvede hrací pole './(grid.component).GridComponent' do takového stavu, v jakém bylo před první interakcí uživatele

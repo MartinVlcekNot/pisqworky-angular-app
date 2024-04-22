@@ -13,5 +13,5 @@ export interface IClassManagement {
   // jejich aktuálnímu výčtu
   toggleClasses(): void;
 
-  classManagementService: ClassManagementService;
+  readonly classManagementService: ClassManagementService;
 }

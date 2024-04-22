@@ -108,7 +108,7 @@ export class CellService {
     let line: Array<Cell> = [];
 
     if (grid) {
-      let owner = posCell.symbol.for;
+      let owner = posCell.symbol.owner;
 
       if (owner !== Owner.nobody) {
         for (let i = 1; i <= inLine - 1; i++) {
@@ -119,7 +119,7 @@ export class CellService {
             if (this.isInBounds(grid, new Pos(new CPos(row, column)))) {
               let cell = grid.grid[row].row[column];
 
-              if (cell.symbol.for === owner) {
+              if (cell.symbol.owner === owner) {
                 line.push(cell);
               }
               else
@@ -143,7 +143,7 @@ export class CellService {
   private getInLine(posCell: Cell, direction: Dir, inLine: number): Cell[] {
     let line: Array<Cell> = [];
 
-    if (posCell.symbol.for !== Owner.nobody)
+    if (posCell.symbol.owner !== Owner.nobody)
       line.push(posCell);
 
     line = [...line, ...this.getDirection(posCell, direction, inLine)]
