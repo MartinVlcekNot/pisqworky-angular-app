@@ -1,5 +1,6 @@
 import { PlayerDirector } from "./playerDirector";
 import { OwnerSymbol } from "./symbol";
+import { SymbolActionStack } from "./symbolActionStack";
 
 export interface IPlayable {
 
@@ -9,4 +10,6 @@ export interface IPlayable {
   get gridPlayerD(): PlayerDirector | undefined;
 
   get infer(): OwnerSymbol;
+
+  registerSymbolAction(): void;
 }

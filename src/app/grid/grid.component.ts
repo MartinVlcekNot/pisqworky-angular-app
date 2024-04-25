@@ -7,6 +7,7 @@ import { CellService } from '../cell/cell.service';
 import { PlayerDirector } from '../player/playerDirector';
 import { ClassManagementService } from '../../styleClassManagement/class-management.service';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
+import { SymbolActionStack } from '../player/symbolActionStack';
 
 // Komponent 'GridComponent' je tabulka (dále používáno spíše "mřížka") komponentů '../cell/cell-shell/(cell-shell.component).CellShellComponent'
 // sloužící jako hrací pole.
@@ -121,6 +122,8 @@ export class GridComponent implements IBoundsStyle {
   // hráč na tahu v konkrétní mřížce
   public readonly playerDirector: PlayerDirector;
 
+  public readonly symbolActionStack: SymbolActionStack;
+
   // přepne hráče na tahu
   public switchPlayer() {
     this.playerDirector.switchPlayer();
@@ -131,13 +134,14 @@ export class GridComponent implements IBoundsStyle {
     this.playerDirector.resetPlayer();
   }
 
-  public constructor(private gridService: GridService, public cellService: CellService, public cmService: ClassManagementService) {
+  public constructor(public gridService: GridService, public cellService: CellService, public cmService: ClassManagementService) {
     // vygeneruje unikátní id pro konkrétní mřížku a registruje ji
     let id = this.gridService.uniqueId;
     GridService.idGridBase.push({ id: id, inst: this });
     //
 
-    this.playerDirector = new PlayerDirector();
+    this.playerDirector = new PlayerDirector(this);
+    this.symbolActionStack = new SymbolActionStack(this);
 
     this.heightChange.addSubscriber(this.onHeightChanged);
 

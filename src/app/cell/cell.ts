@@ -57,7 +57,7 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
   // vlastnost set nastaví i symbol schránky
   private _symbol: OwnerSymbol = Symbols.N;
   public get symbol() { return this._symbol; }
-  private set symbol(value: OwnerSymbol) {
+  public set symbol(value: OwnerSymbol) {
     this._symbol = value;
 
     if (this.shell) {
@@ -65,6 +65,8 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
 
       this.shell.symbol = this.symbol.textOut;
     }
+
+    this.grid?.symbolActionStack.removeSymbAct(this);
   }
 
   public readonly classManagementService: ClassManagementService;
@@ -80,19 +82,33 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
     return Symbols.N;
   }
 
+  public registerSymbolAction() {
+    this.grid?.symbolActionStack.removeSymbAct(this);
+
+    let symbAct = Symbols.getSymbolActionCell(this);
+
+    if (symbAct)
+      this.grid?.symbolActionStack.placeOnTop(symbAct);
+  }
+
   public get grid(): GridComponent | undefined {
     return this.cellService.getGridByCell(this);
   }
 
   // určuje, zda buňka reaguje na podněty ze strany uživatele
 
-  private _interactable: boolean = false;
-  public get userInteraction(): boolean { return this._interactable; }
+  private _userInteraction: boolean = false;
+  public get userInteraction(): boolean { return this._userInteraction; }
   public set userInteraction(value: boolean) {
-    this._interactable = value;
+    this._userInteraction = value;
 
-    if (this.userInteraction)
+    if (this.userInteraction) {
       this.allowCheckingWin = true;
+      this.addClasses(["inactive"]);
+    }
+    else {
+      this.removeClasses(["inactive"]);
+    }
   }
 
   // speciální případ interakce týkající se kontrolování vítězství
@@ -185,12 +201,10 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
       if (this.grid) {
         this.gridService.disableAllCells(this.grid);
 
-        console.log("vyhrává " + Symbol[this.symbol.represent] + "!!!");
+        console.log("vyhrává " + Owner[this.symbol.owner] + "!!!");
 
-        // vizualizace
         this.gridService.setClassesExceptOf(line, ["inactive"], false);
         this.gridService.setClassesExceptOf(line, ["irrelevant"], true);
-        // konec vizualizace
       }
 
       return true;
@@ -199,7 +213,7 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
       return false;
   }
 
-  constructor(private readonly cellService: CellService, private readonly gridService: GridService, cmService: ClassManagementService) {
+  constructor(public readonly cellService: CellService, public readonly gridService: GridService, cmService: ClassManagementService) {
     this.symbol = Symbols.N;
     this.classManagementService = cmService;
 
@@ -213,7 +227,6 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
     if (this.userInteraction) {
       this.gridPlayerD?.play(this);
 
-      // vizualizace
       this.removeClasses(["inactive"]);
 
       if (this.grid) {
@@ -226,7 +239,6 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
       this.addClasses(["active"]);
       if (this.grid)
         this.gridService.setClassesExceptOf([this], ["active"], false);
-      // konec vizualizace
 
       this.userInteraction = false;
     }

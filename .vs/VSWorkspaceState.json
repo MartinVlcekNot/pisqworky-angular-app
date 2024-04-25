@@ -3,15 +3,15 @@
     "",
     "\\src",
     "\\src\\app",
+    "\\src\\app\\cell",
+    "\\src\\app\\cell\\cell-shell",
     "\\src\\app\\grid",
-    "\\src\\app\\grid\\gridRow",
-    "\\src\\app\\parent",
     "\\src\\app\\player",
     "\\src\\app\\restart",
     "\\src\\assets",
     "\\src\\assets\\images",
     "\\src\\styleClassManagement"
   ],
-  "SelectedNode": "\\src\\app\\cell\\cell-shell\\cell-shell.component.css",
+  "SelectedNode": "\\src\\app\\player\\action.ts",
   "PreviewInSolutionExplorer": false
 }

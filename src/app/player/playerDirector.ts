@@ -1,6 +1,8 @@
 import { Event } from '../../eventHandler/event';
+import { GridComponent } from '../grid/grid.component';
 import { IPlayable } from './playableInterface';
 import { Owner, Symbol, Symbols } from './symbol';
+import { SymbolQueue } from './symbolQueue';
 
 // Třída 'PlayerDirector' poskytuje funkcionalitu spojenou s hráčem na tahu v hracím poli.
 // Nezávislí hráči (např. jiných hracích polí) nesmí být stejné instance
@@ -24,6 +26,15 @@ export class PlayerDirector {
     this.playerSwitch.invoke(this, { playerValue: curPlayer });
   }
 
+  protected grid: GridComponent;
+
+  public readonly symbolQueue: SymbolQueue;
+
+  public constructor(grid: GridComponent) {
+    this.grid = grid;
+    this.symbolQueue = new SymbolQueue(this.grid, Symbols.players);
+  }
+
   // nastaví hráče na začínajícího hráče
   public setUp() {
     this.player = Owner.cross;
@@ -43,13 +54,11 @@ export class PlayerDirector {
   }
 
   public play(cell: IPlayable) {
-    let chance = Math.random() * 5
-
-    if (chance < 1)
-      cell.symbol = Symbols.symbFrom(Symbol.bomb).toOwnerSymbol();
-    else
-      cell.symbol = cell.infer;
+    cell.symbol = this.symbolQueue.fetchSymbol(this.player);
 
     cell.gridPlayerD?.switchPlayer();
+
+    // až po přehození hráče
+    cell.registerSymbolAction();
   }
 }
