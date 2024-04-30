@@ -51,7 +51,7 @@ export class GridComponent implements IBoundsStyle {
 
   // událost nastávající tehdy, když se změní hodnota 'this._width' skrze set vlastnost 'this.width'
   public widthChange: Event<{ widthValue: number }> = new Event();
-  private widthChanged(curWidth: number) {
+  protected widthChanged(curWidth: number) {
     this.widthChange.invoke(this, { widthValue: curWidth });
   }
 
@@ -90,10 +90,10 @@ export class GridComponent implements IBoundsStyle {
 
   // událost nastávající tehdy, když se změní hodnota 'this._height' skrze set vlasnost 'this.height'
   public heightChange: Event<{ heightValue: number }> = new Event();
-  private heightChanged(curHeight: number) {
+  protected heightChanged(curHeight: number) {
     this.heightChange.invoke(this, { heightValue: curHeight });
   }
-  private onHeightChanged = (sender: object | undefined, args: { heightValue: number }) => {
+  protected onHeightChanged = (sender: object | undefined, args: { heightValue: number }) => {
     this.gridService.adjustRow<GridRow, GridComponent>(this.grid, args.heightValue, this.gridService.gridRowFactory, this);
   }
 
@@ -117,7 +117,7 @@ export class GridComponent implements IBoundsStyle {
   // mřížka chápaná jako množina řádků mřížky './gridRow/gridRow.GridRow'
   private _grid: Array<GridRow> = [];
   public get grid() { return this._grid; }
-  private set grid(value: Array<GridRow>) { this._grid = value; }
+  protected set grid(value: Array<GridRow>) { this._grid = value; }
 
   // hráč na tahu v konkrétní mřížce
   public readonly playerDirector: PlayerDirector;

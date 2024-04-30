@@ -13,7 +13,7 @@ export class PlayerDirector {
   // hráč na tahu
   private _player = Owner.cross;
   public get player() { return this._player; }
-  private set player(value: Owner) {
+  protected set player(value: Owner) {
     let previous = this._player;
 
     this._player = value;
@@ -23,7 +23,7 @@ export class PlayerDirector {
   }
 
   public playerSwitch: Event<{ playerValue: Owner }> = new Event();
-  private playerSwitched(curPlayer: Owner) {
+  protected playerSwitched(curPlayer: Owner) {
     this.playerSwitch.invoke(this, { playerValue: curPlayer });
   }
 

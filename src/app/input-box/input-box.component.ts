@@ -63,7 +63,7 @@ export class InputBoxComponent<T> implements IClassManagement {
   // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   public get classes() { return [...this._classes]; }
   // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
-  private set classes(value: Array<string>) {
+  protected set classes(value: Array<string>) {
     this._classes = value;
   }
 
@@ -95,7 +95,7 @@ export class InputBoxComponent<T> implements IClassManagement {
   // pole s aktuální zadanou, validovanou a převedenou hodnotou
   private _value: T | undefined;
   public get value() { return this._value; }
-  private set value(value: T | undefined) {
+  protected set value(value: T | undefined) {
     let previous = this._value;
 
     this._value = value;
@@ -106,13 +106,13 @@ export class InputBoxComponent<T> implements IClassManagement {
 
   // událost nastávající tehdy, když se změní hodnota 'this._value' skrze set vlasnost 'this.value'
   public valueChange: Event<IBValueChangeArgs<T>> = new Event();
-  private valueChanged(args: IBValueChangeArgs<T>) {
+  protected valueChanged(args: IBValueChangeArgs<T>) {
     this.valueChange.invoke(this, args);
   }
 
   // pole funkcí které se volají, když nastane událost 'this.valueChange'
   // k registraci změny dojde pouze, když je hodnota nastavena skrze set vlastnost 'this.subscriberFuncs'
-  private _subscriberFuncs: Array<(sender: object | undefined, args: IBValueChangeArgs<T>) => void> = []
+  protected _subscriberFuncs: Array<(sender: object | undefined, args: IBValueChangeArgs<T>) => void> = []
   public get subscriberFuncs() { return this._subscriberFuncs; }
   // možnost nastavit skrze stejnojmenný atribut tohoto komponentu (dynamická hodnota)
   @Input() public set subscriberFuncs(value: Array<(sender: object | undefined, args: IBValueChangeArgs<T>) => void>) {
@@ -147,7 +147,7 @@ export class InputBoxComponent<T> implements IClassManagement {
   // textová hodnota, která už prošla procesem kontroly; metodou 'this.inputTextValidationFunc'
   private _checkedText: string = '';
   public get checkedText() { return this._checkedText; }
-  private set checkedText(value: string) {
+  protected set checkedText(value: string) {
     this._checkedText = value;
 
     this.value = this.converterFunc(this.checkedText);

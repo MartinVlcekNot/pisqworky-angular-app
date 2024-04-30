@@ -10,8 +10,7 @@ export class SymbolActionStack {
   protected grid: GridComponent;
   protected readonly gridService: GridService;
 
-  // protected
-  public stack: Array<SymbolAction<Cell | GridComponent>> = [];
+  protected stack: Array<SymbolAction<Cell | GridComponent>> = [];
 
   public placeOnTop(symbAct: SymbolAction<Cell | GridComponent>) {
     this.stack.push(symbAct);

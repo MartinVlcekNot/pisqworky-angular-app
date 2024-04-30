@@ -42,10 +42,10 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
 
   // událost nastávající tehdy, když se změní hodnota 'this._shell' skrze set vlastnost 'this.shell'
   public shellAttach: Event<{ shellValue: CellShellComponent | undefined }> = new Event();
-  private attachedToShell(curShell: CellShellComponent | undefined) {
+  protected attachedToShell(curShell: CellShellComponent | undefined) {
     this.shellAttach.invoke(this, { shellValue: curShell });
   }
-  private onAttachedToShell = (sender: object | undefined, args: { shellValue: CellShellComponent | undefined }) => {
+  protected onAttachedToShell = (sender: object | undefined, args: { shellValue: CellShellComponent | undefined }) => {
     if (args.shellValue)
       args.shellValue.onClick = this.onShellClick;
 
@@ -140,7 +140,7 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
 
   // zavolá se tehdy, když nastane událost 'this.parentObj.parentChange'
   // provede změny v souvislosti s novým rodičovským objektem
-  private onParentChanged = (sender: object | undefined, args: { parentValue: GridRow | undefined }) => {
+  protected onParentChanged = (sender: object | undefined, args: { parentValue: GridRow | undefined }) => {
     if (args.parentValue !== undefined) {
       args.parentValue.posObj.pos.rowChange.addSubscriber(this.onParentRowChanged);
       this.posObj.pos.row = args.parentValue.posObj.pos.row;
@@ -149,7 +149,7 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
 
   // zavolá se tehdy, když nastane událost 'this.parentObj.parent.posObj.pos.rowChange'
   // provede změny v souvislosti s novými souřadnicemi
-  private onParentRowChanged = (sender: object | undefined, args: { rowValue: number | undefined }) => {
+  protected onParentRowChanged = (sender: object | undefined, args: { rowValue: number | undefined }) => {
     this.posObj.pos.row = args.rowValue;
   }
 
@@ -158,7 +158,7 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
   // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
   public get classes() { return [...this._classes] }
   // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
-  private set classes(value: Array<string>) {
+  protected set classes(value: Array<string>) {
     this._classes = value;
   }
 
@@ -218,7 +218,7 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
       return false;
   }
 
-  constructor(public readonly cellService: CellService, public readonly gridService: GridService, cmService: ClassManagementService) {
+  public constructor(public readonly cellService: CellService, public readonly gridService: GridService, cmService: ClassManagementService) {
     this.symbol = Symbols.N;
     this.classManagementService = cmService;
 
@@ -263,7 +263,7 @@ export class CPos {
     this._column = value;
   }
 
-  constructor(row?: number, column?: number) {
+  public constructor(row?: number, column?: number) {
     this.row = row;
     this.column = column;
   }

@@ -23,7 +23,7 @@ export class Parent<TParent> {
 
   // událost nastávající tehdy, když se změní hodnota 'this._parent' skrze set vlastnost 'this.parent'
   public parentChange: Event<{ parentValue: TParent | undefined }> = new Event();
-  private parentChanged(curParent: TParent | undefined) {
+  protected parentChanged(curParent: TParent | undefined) {
     this.parentChange.invoke(this, { parentValue: curParent });
   }
 }
