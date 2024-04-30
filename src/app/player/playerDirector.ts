@@ -1,4 +1,5 @@
 import { Event } from '../../eventHandler/event';
+import { Cell } from '../cell/cell';
 import { GridComponent } from '../grid/grid.component';
 import { IPlayable } from './playableInterface';
 import { Owner, Symbol, Symbols } from './symbol';
@@ -55,6 +56,7 @@ export class PlayerDirector {
 
   public play(cell: IPlayable) {
     cell.symbol = this.symbolQueue.fetchSymbol(this.player);
+    cell.userInteraction = false;
 
     cell.gridPlayerD?.switchPlayer();
 

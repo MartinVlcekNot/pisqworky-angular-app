@@ -112,7 +112,7 @@ export class CellService {
 
       if (owner !== Owner.nobody) {
         for (let i = 1; i <= inLine - 1; i++) {
-          if (posCell.posObj.pos.column && posCell.posObj.pos.row !== undefined) {
+          if (posCell.posObj.pos.column !== undefined && posCell.posObj.pos.row !== undefined) {
             let column = posCell.posObj.pos.column - i * direction.down;
             let row = posCell.posObj.pos.row - i * direction.right;
 
@@ -164,7 +164,7 @@ export class CellService {
   ];
 
   // pomocí vynásobení vektoru vec*(-1) se dá dostat všech osmi směrů
-  private invertDirection(direction: Dir): Dir {
+  public invertDirection(direction: Dir): Dir {
     return { down: -direction.down, right: -direction.right };
   }
 

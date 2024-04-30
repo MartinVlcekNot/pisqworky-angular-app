@@ -12,4 +12,7 @@ export interface IPlayable {
   get infer(): OwnerSymbol;
 
   registerSymbolAction(): void;
+
+  get userInteraction(): boolean;
+  set userInteraction(value: boolean);
 }

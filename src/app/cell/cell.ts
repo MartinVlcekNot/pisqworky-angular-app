@@ -60,13 +60,18 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
   public set symbol(value: OwnerSymbol) {
     this._symbol = value;
 
+    if (this.shell)
+      this.decodeSymbolSrc();
+
+    this.grid?.symbolActionStack.removeSymbAct(this);
+  }
+
+  public decodeSymbolSrc() {
     if (this.shell) {
       this.shell.srcRef = Symbols.decodeSrc(this.symbol);
 
       this.shell.symbol = this.symbol.textOut;
     }
-
-    this.grid?.symbolActionStack.removeSymbAct(this);
   }
 
   public readonly classManagementService: ClassManagementService;
@@ -233,14 +238,12 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
         let checkWinManager = this.gridService.createChWM(this.grid);
         checkWinManager.winFound = this.checkWin();
       }
-      else
-        this.checkWin();
+      /*else
+        this.checkWin();*/
 
       this.addClasses(["active"]);
       if (this.grid)
         this.gridService.setClassesExceptOf([this], ["active"], false);
-
-      this.userInteraction = false;
     }
   }
 }

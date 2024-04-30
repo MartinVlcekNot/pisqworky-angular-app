@@ -224,17 +224,17 @@ export class GridService {
 
   // vrátí buňku '../cell/cell.Cell' v zadané mřížce './(grid.component).GridComponent' podle zadaných souřadnic
   public getCellByPos(grid: GridComponent, pos: Pos<CPos>): Cell | undefined {
-    let wantedCell: Cell | undefined = undefined;
+    if (pos.pos.row) {
+      const row = grid.grid[pos.pos.row];
 
-    this.forEachCell(grid, (cell) => {
-      if (pos.evaluatePosEquals(cell)) {
-        wantedCell = cell;
+      if (row && pos.pos.column) {
+        const cell = row.row[pos.pos.column];
 
-        return;
+        return cell;
       }
-    });
+    }
 
-    return wantedCell;
+    return undefined;
   }
 
   public checkGridWin(grid: GridComponent, checkWinManager?: CheckWinManager): boolean {

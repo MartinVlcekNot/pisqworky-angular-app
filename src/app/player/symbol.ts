@@ -1,12 +1,12 @@
+import { Cell } from "../cell/cell";
+import { GridComponent } from "../grid/grid.component";
+import { IPlayable } from "./playableInterface";
+import { ActionFunc, Actions, SymbolAction } from "./action";
+
 // Výčet 'Owner' je souhrn hodnot, kterých může nabývat majitel určité buňky (viz '../cell.cell.Cell').
 // 'cross' -> křížek
 // 'circle' -> kolečko
 // 'nobody' -> buňka je prázdná
-
-import { Cell } from "../cell/cell";
-import { GridComponent } from "../grid/grid.component";
-import { IPlayable } from "./playableInterface";
-import { ActionFunc, Actions, SymbolAction} from "./action";
 
 export enum Owner {
   nobody,
@@ -130,7 +130,7 @@ export class Symbols {
       '$symbol',
       Actions.bombAction,
       undefined,
-      '$random 5'
+      '$random 8'
     ),
     new ClassifiedSymbol(
       Symbol.rogue,
@@ -215,10 +215,11 @@ export class Symbols {
   public static getSymbolActionCell(cell: Cell): SymbolAction<Cell | GridComponent> | undefined {
     let clsSymb = this.symbFrom(cell.symbol.represent);
     let action = clsSymb.action;
-    let decayIn = clsSymb.decayIn;
+    let decayIn: number | null = clsSymb.decayIn;
 
     if (action) {
       let symbAct = {
+        forSymbol: cell.symbol,
         action: action,
         obj: cell,
         decayIn: decayIn,
@@ -227,7 +228,7 @@ export class Symbols {
 
       this.decodeDecayOptFor(symbAct);
 
-      if (symbAct.decayIn <= 0)
+      if (symbAct.decayIn !== null && symbAct.decayIn <= 0)
         return undefined;
 
       return symbAct;
@@ -243,6 +244,7 @@ export class Symbols {
 
     if (action) {
       return {
+        forSymbol: symbol,
         action: action,
         obj: grid,
         decayIn: decayIn,

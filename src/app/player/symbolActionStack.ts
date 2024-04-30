@@ -1,7 +1,7 @@
 import { CellService } from "../cell/cell.service";
 import { GridComponent } from "../grid/grid.component";
 import { GridService } from "../grid/grid.service";
-import { Owner } from "./symbol";
+import { Owner, Symbol } from "./symbol";
 import { Cell } from "../cell/cell";
 import { SymbolAction } from "./action";
 
@@ -15,36 +15,38 @@ export class SymbolActionStack {
 
   public placeOnTop(symbAct: SymbolAction<Cell | GridComponent>) {
     this.stack.push(symbAct);
-    console.log(this.stack);
   }
 
-  public callStack() {
+  public invokeStack() {
     let remove: Array<SymbolAction<Cell | GridComponent>> = [];
 
     this.stack.forEach((symbAct) => {
-      let invoke = true;
+      if (this.stack.includes(symbAct)) {
+        let invoke = true;
 
-      if (typeof symbAct.decayIn === "number") {
-        let decayIn = symbAct.decayIn as number;
-        decayIn--;
+        if (typeof symbAct.decayIn === "number") {
+          let decayIn = symbAct.decayIn as number;
+          decayIn--;
 
-        if (decayIn === 0)
-          remove.push(symbAct);
-        else if (decayIn < 0) {
-          remove.push(symbAct);
-          invoke = false;
+          if (decayIn <= 0) {
+            remove.push(symbAct);
+            if (decayIn < 0)
+              invoke = false;
+          }
+
+          symbAct.decayIn = decayIn;
         }
 
-        symbAct.decayIn = decayIn;
+        if (invoke)
+          symbAct.args = symbAct.action(symbAct.obj, symbAct.decayIn, symbAct.args);
       }
-
-      if (invoke)
-        symbAct.args = symbAct.action(symbAct.obj, symbAct.decayIn, symbAct.args);
     });
 
-    this.grid.gridService.checkGridWin(this.grid);
-
     this.stack = this.stack.filter((symbAct) => !remove.includes(symbAct));
+    this.orderSymbolActions();
+    console.log(this.stack);
+
+    this.grid.gridService.checkGridWin(this.grid);
   }
 
   public removeSymbAct(cell: Cell) {
@@ -55,10 +57,25 @@ export class SymbolActionStack {
     this.stack = [];
   }
 
-  //TODO metoda na systematické seřazení funkcí v 'this.stack'
+  public orderSymbolActions() {
+    let patchSymbActions = this.stack.filter((patchSymbAct) => patchSymbAct.forSymbol.represent === Symbol.patch);
+    let output: Array<SymbolAction<Cell | GridComponent>> = [];
+
+    this.stack = this.stack.filter((symbAct) => !patchSymbActions.includes(symbAct));
+
+    let symbQueue = this.grid.playerDirector.symbolQueue;
+
+    for (let i = symbQueue.decayBeforePlacement(symbQueue.queueLength - 1); i >= 0; i--) {
+      let psa = patchSymbActions.find((patchSymbAct) => patchSymbAct.decayIn === i);
+      if (psa)
+        output.push(psa);
+    }
+
+    this.stack.push(...output);
+  }
 
   protected onPlayerSwitched = (sender: object | undefined, args: { playerValue: Owner }) => {
-    this.callStack();
+    this.invokeStack();
   }
 
   public constructor(grid: GridComponent) {

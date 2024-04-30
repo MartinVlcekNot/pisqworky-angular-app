@@ -11,35 +11,20 @@ export class SymbolQueue {
   protected queue: Array<{ player: Owner, symbols: Array<OwnerSymbol> }> = [];
 
   public fetchSymbol(player: Owner): OwnerSymbol {
-    this.updateQueue(player);
+    this.updateQueue(player, false);
 
     let row = this.queue.find((row) => row.player === player);
 
     if (row) {
       let symbol = row.symbols.shift();
 
-      //
-      if (player === Owner.cross) {
-        let t = this.grid.symbolActionStack.stack.find((sa) => {
-          if (sa.obj instanceof GridComponent && sa.decayIn === 2) return true; return false;
-        })?.decayIn;
-        if (this.queue[1].symbols[0]?.represent !== Symbol.patch && t === 2)
-          console.error("symbol is not patch");
-        else if (this.queue[1].symbols[0]?.represent === Symbol.patch && t === 2)
-          console.error("symbol is patch");
-      }
-      else {
-        let t = this.grid.symbolActionStack.stack.find((sa) => {
-          if (sa.obj instanceof GridComponent && sa.decayIn === 2) return true; return false;
-        })?.decayIn;
-        if (this.queue[0].symbols[0]?.represent !== Symbol.patch && t === 2)
-          console.error("symbol is not patch");
-        else if (this.queue[0].symbols[0]?.represent === Symbol.patch && t === 2)
-          console.error("symbol is patch");
-      }
-      //
-
       this.updateQueue(player);
+
+      let stringRepre = " ";
+      row.symbols.forEach((symbol) => {
+        stringRepre += Symbol[symbol.represent] + "; ";
+      });
+      console.log(`player ${Owner[player]}:\n{${stringRepre}}`);
 
       if (symbol)
         return symbol;
@@ -48,11 +33,11 @@ export class SymbolQueue {
     return Symbols.N;
   }
 
-  public rollDice(player: Owner, index?: number): OwnerSymbol {
+  public rollDice(player: Owner, index?: number, afterFetch?: boolean): OwnerSymbol {
     let symbol: ClassifiedSymbol;
 
     // vybere symbol
-    let primarySymbs = 3
+    let primarySymbs = 3;
     let special = Symbols.symbArr.length - primarySymbs;
     let primary = special;
     let chance = Math.random() * (primary + special);
@@ -69,7 +54,6 @@ export class SymbolQueue {
     //
 
     let decayIn = Symbols.decodeDecayOpt(symbol.decayOpt);
-
     if (decayIn !== null && decayIn !== undefined && decayIn <= 0) {
       let symbolAction = Symbols.getSymbolActionGrid(this.grid, symbol.toOwnerSymbol(player));
 
@@ -77,7 +61,7 @@ export class SymbolQueue {
         Symbols.decodeDecayOptFor(symbolAction);
 
         if (symbolAction.decayIn !== null && index !== undefined) {
-          symbolAction.decayIn += (index + 1) * Symbols.players.length + 1;
+          symbolAction.decayIn += this.decayBeforePlacement(index, afterFetch);
         }
 
         this.grid.symbolActionStack.placeOnTop(symbolAction);
@@ -87,12 +71,20 @@ export class SymbolQueue {
     return symbol.toOwnerSymbol(player);
   }
 
-  public updateQueue(player: Owner) {
+  public decayBeforePlacement(index: number, afterFetch?: boolean) {
+    let afNum = 1;
+    if (afterFetch !== undefined && !afterFetch)
+      afNum = 0;
+
+    return (index + afNum) * Symbols.players.length + 1;
+  }
+
+  public updateQueue(player: Owner, afterFetch?: boolean) {
     let row = this.queue.find((row) => row.player === player);
 
     if (row) {
       for (let i = row.symbols.length; i < this.queueLength; i++) {
-        row.symbols.push(this.rollDice(player, i));
+        row.symbols.push(this.rollDice(player, i, afterFetch));
       }
 
       if (row.symbols.length > this.queueLength) {
