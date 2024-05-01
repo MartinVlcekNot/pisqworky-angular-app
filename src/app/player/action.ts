@@ -9,12 +9,8 @@ export class Actions {
     if (cell instanceof Cell) {
       if (decayIn === 0) {
         const cellPos = cell.posObj;
-        const cellDirections = [...cell.cellService.directions];
         const grid = cell.grid;
-        let directions = [...cellDirections];
-
-        for (let i = 0; i < cellDirections.length; i++)
-          directions.push(cell.cellService.invertDirection(cellDirections[i]));
+        const directions = cell.cellService.getAllDirections();
 
         directions.forEach((direction) => {
           if (cellPos.pos.column !== undefined && cellPos.pos.row !== undefined) {
@@ -80,6 +76,10 @@ export class Actions {
     }
 
     return undefined;
+  }
+
+  public static turretAction: ActionFunc<Cell | GridComponent> = (cell) => {
+
   }
 }
 

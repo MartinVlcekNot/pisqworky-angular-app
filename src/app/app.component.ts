@@ -5,6 +5,8 @@ import { GridComponent } from './grid/grid.component';
 import { CellService } from './cell/cell.service';
 import { IBValueChangeArgs } from './input-box/input-box.component';
 import { OptionsElem } from './game-options/game-options.component';
+import { ClassifiedSymbol, Owner, Symbol, Symbols } from './player/symbol';
+import { SymbolQueue } from './player/symbolQueue';
 
 // Komponent 'AppComponent' je kontejnerem celého uživatelského rozhraní.
 //
@@ -105,7 +107,7 @@ export class AppComponent implements IBoundsStyle {
   }
 
   constructor(protected gridService: GridService, private cellService: CellService) {
-
+    console.log(Symbols.oddsString);
   }
 
   // šířka hrací plochy v pixelech (plocha zahrnující hrací pole a tlačítko restart)

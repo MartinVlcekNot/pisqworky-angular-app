@@ -36,8 +36,10 @@ export class SymbolActionStack {
           symbAct.decayIn = decayIn;
         }
 
-        if (invoke)
+        if (invoke) {
           symbAct.args = symbAct.action(symbAct.obj, symbAct.decayIn, symbAct.args);
+          console.log(symbAct);
+        }
       }
     });
 
@@ -64,7 +66,7 @@ export class SymbolActionStack {
 
     let symbQueue = this.grid.playerDirector.symbolQueue;
 
-    for (let i = symbQueue.decayBeforePlacement(symbQueue.queueLength - 1); i >= 0; i--) {
+    for (let i = 0; i <= symbQueue.decayBeforePlacement(symbQueue.queueLength - 1); i++) {
       let psa = patchSymbActions.find((patchSymbAct) => patchSymbAct.decayIn === i);
       if (psa)
         output.push(psa);

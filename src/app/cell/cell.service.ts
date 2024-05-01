@@ -168,6 +168,16 @@ export class CellService {
     return { down: -direction.down, right: -direction.right };
   }
 
+  public getAllDirections() {
+    const directions = [...this.directions];
+    let allDirections = [...directions];
+
+    for (let i = 0; i < directions.length; i++)
+      allDirections.push(this.invertDirection(directions[i]));
+
+    return allDirections;
+  }
+
   // vrátí takové pole stejných symbolů jdoucích v daném směru neprodleně za sebou, kde délka pole je větší nebo rovna minimálnímu počtu symbolů
   // za sebou jdoucích
   // vrátí pole posledního kontrolovaného směru, pokud nenajde pole splňující podmínku prvního a druhého řádku tohoto komentáře

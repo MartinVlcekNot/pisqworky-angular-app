@@ -23,6 +23,7 @@ export enum Symbol {
   rogue,
   disguise,
   patch,
+  turret,
 }
 
 export enum ClassifierToken {
@@ -36,11 +37,12 @@ export class ClassifiedSymbol {
   public clsToken: ClassifierToken;
   public textOut: string;
   public src: string;
+  public odds?: number;
   public action?: ActionFunc<Cell | GridComponent>;
   public decayIn: number;
   public decayOpt?: string;
 
-  constructor(represent: Symbol, forOpt: Array<Owner>, clsToken: ClassifierToken, textOut: string, src?: string, action?: ActionFunc<Cell | GridComponent>, lastFor?: number, lastForOpt?: string) {
+  constructor(represent: Symbol, forOpt: Array<Owner>, clsToken: ClassifierToken, textOut: string, src?: string, odds?: number, action?: ActionFunc<Cell | GridComponent>, decayIn?: number, lastForOpt?: string) {
     this.represent = represent;
     this.ownerOpt = forOpt;
     this.clsToken = clsToken;
@@ -51,12 +53,13 @@ export class ClassifiedSymbol {
     else
       this.src = '$symbol';
 
+    this.odds = odds;
     this.action = action;
 
-    if (!lastFor)
+    if (!decayIn)
       this.decayIn = 1;
     else
-      this.decayIn = lastFor;
+      this.decayIn = decayIn;
 
     this.decayOpt = lastForOpt;
   }
@@ -97,7 +100,7 @@ export class Symbols {
     Owner.circle,
   ]
 
-  public static readonly symbArr: Array<ClassifiedSymbol> = [
+  public static readonly symbList: Array<ClassifiedSymbol> = [
     new ClassifiedSymbol(
       Symbol.none,
       [Owner.nobody],
@@ -120,14 +123,17 @@ export class Symbols {
       Symbol.wall,
       [Owner.nobody],
       ClassifierToken.special,
-      '='
+      'W',
+      undefined,
+      9
     ),
     new ClassifiedSymbol(
       Symbol.bomb,
       [Owner.nobody],
       ClassifierToken.special,
       '¤',
-      '$symbol',
+      undefined,
+      10,
       Actions.bombAction,
       undefined,
       '$random 8'
@@ -138,6 +144,7 @@ export class Symbols {
       ClassifierToken.special,
       '8',
       '$symbol+_o_+$owner',
+      6,
       Actions.rogueAction,
       1
     ),
@@ -145,23 +152,36 @@ export class Symbols {
       Symbol.disguise,
       this.players,
       ClassifierToken.special,
-      'Q',
-      '$symbol+_o_+$owner'
+      'G',
+      '$symbol+_o_+$owner',
+      11
     ),
     new ClassifiedSymbol(
       Symbol.patch,
       this.players,
       ClassifierToken.special,
-      '§',
+      'P',
       '$symbol+_o_+$owner',
+      7,
       Actions.patchAction,
       undefined,
       '$before_placement'
+    ),
+    new ClassifiedSymbol(
+      Symbol.turret,
+      [Owner.nobody],
+      ClassifierToken.special,
+      'T',
+      undefined,
+      3,
+      Actions.turretAction,
+      undefined,
+      '$forever'
     )
   ];
 
   public static symbFrom(symbol: Symbol): ClassifiedSymbol {
-    let symb = this.symbArr.find((s) => {
+    let symb = this.symbList.find((s) => {
       return s.represent === symbol;
     });
 
@@ -172,7 +192,7 @@ export class Symbols {
   }
 
   public static getPrimaryCls(owner: Owner): ClassifiedSymbol {
-    let symbol = this.symbArr.find((symb) => {
+    let symbol = this.symbList.find((symb) => {
       return symb.clsToken === ClassifierToken.primary && symb.ownerOpt.includes(owner)
     });
 
@@ -180,6 +200,36 @@ export class Symbols {
       return symbol;
 
     return this.none;
+  }
+
+  public static get specials(): Array<ClassifiedSymbol> {
+    return this.symbList.filter((clsSymb) => clsSymb.clsToken === ClassifierToken.special);
+  }
+
+  public static get primaries(): Array<ClassifiedSymbol> {
+    return this.symbList.filter((clsSymb) => clsSymb.clsToken === ClassifierToken.primary);
+  }
+
+  public static get distribution(): number {
+    let distribution = 0;
+    Symbols.specials.forEach((clsSymbol) => clsSymbol.odds !== undefined ? distribution += clsSymbol.odds : false);
+    return distribution;
+  }
+
+  public static get odds(): Array<{ symbol: ClassifiedSymbol, odds: number }> {
+    let symbArr: Array<{ symbol: ClassifiedSymbol, odds: number }> = [];
+    this.specials.forEach((clsSymb) => {
+      symbArr.push({ symbol: clsSymb, odds: clsSymb.odds !== undefined ? clsSymb.odds / this.distribution : 0 });
+    });
+    return symbArr;
+  }
+
+  public static get oddsString() {
+    let str = "";
+    this.odds.forEach((odd) => {
+      str += `${Symbol[odd.symbol.represent]}: ${odd.odds * 100} %\n`;
+    });
+    return str;
   }
 
   public static getPrimary(owner: Owner): OwnerSymbol {

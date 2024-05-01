@@ -11,7 +11,7 @@ export class SymbolQueue {
   protected queue: Array<{ player: Owner, symbols: Array<OwnerSymbol> }> = [];
 
   public fetchSymbol(player: Owner): OwnerSymbol {
-    this.updateQueue(player, false);
+    this.updateQueue(player, true);
 
     let row = this.queue.find((row) => row.player === player);
 
@@ -33,25 +33,36 @@ export class SymbolQueue {
     return Symbols.N;
   }
 
-  public rollDice(player: Owner, index?: number, afterFetch?: boolean): OwnerSymbol {
-    let symbol: ClassifiedSymbol;
+  public static pickSymbol(player: Owner): ClassifiedSymbol {
+    let symbol: ClassifiedSymbol = Symbols.none;
 
-    // vybere symbol
-    let primarySymbs = 3;
-    let special = Symbols.symbArr.length - primarySymbs;
-    let primary = special;
-    let chance = Math.random() * (primary + special);
+    let playPrimary = Math.random() * 2;
 
-    if (chance < primary)
+    if (playPrimary <= 1)
       symbol = Symbols.getPrimaryCls(player);
-    else if (chance >= special) {
-      let enumIndex = Math.floor(chance) - primary + primarySymbs;
+    else {
+      const specials = Symbols.specials.length;
+      let odds = Math.random() * Symbols.distribution;
 
-      symbol = Symbols.symbFrom(enumIndex as Symbol);   
+      let separator = 0;
+      for (let i = 0; i < specials; i++) {
+        let symbOdds = Symbols.specials[i].odds;
+        if (symbOdds !== undefined) {
+          separator += symbOdds;
+
+          if (odds <= separator) {
+            symbol = Symbols.specials[i];
+            break;
+          }
+        }
+      }
     }
-    else
-      symbol = Symbols.none;
-    //
+
+    return symbol;
+  }
+
+  public rollDice(player: Owner, index?: number, beforeShift?: boolean): OwnerSymbol {
+    let symbol = SymbolQueue.pickSymbol(player);
 
     let decayIn = Symbols.decodeDecayOpt(symbol.decayOpt);
     if (decayIn !== null && decayIn !== undefined && decayIn <= 0) {
@@ -61,7 +72,7 @@ export class SymbolQueue {
         Symbols.decodeDecayOptFor(symbolAction);
 
         if (symbolAction.decayIn !== null && index !== undefined) {
-          symbolAction.decayIn += this.decayBeforePlacement(index, afterFetch);
+          symbolAction.decayIn += this.decayBeforePlacement(index, beforeShift);
         }
 
         this.grid.symbolActionStack.placeOnTop(symbolAction);
@@ -71,20 +82,20 @@ export class SymbolQueue {
     return symbol.toOwnerSymbol(player);
   }
 
-  public decayBeforePlacement(index: number, afterFetch?: boolean) {
+  public decayBeforePlacement(index: number, beforeShift?: boolean) {
     let afNum = 1;
-    if (afterFetch !== undefined && !afterFetch)
+    if (beforeShift !== undefined && beforeShift)
       afNum = 0;
 
     return (index + afNum) * Symbols.players.length + 1;
   }
 
-  public updateQueue(player: Owner, afterFetch?: boolean) {
+  public updateQueue(player: Owner, beforeShift?: boolean) {
     let row = this.queue.find((row) => row.player === player);
 
     if (row) {
       for (let i = row.symbols.length; i < this.queueLength; i++) {
-        row.symbols.push(this.rollDice(player, i, afterFetch));
+        row.symbols.push(this.rollDice(player, i, beforeShift));
       }
 
       if (row.symbols.length > this.queueLength) {
