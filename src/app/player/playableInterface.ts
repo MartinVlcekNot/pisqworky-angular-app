@@ -1,17 +1,18 @@
 import { PlayerDirector } from "./playerDirector";
 import { OwnerSymbol } from "./symbol";
-import { SymbolActionStack } from "./symbolActionStack";
 
 export interface IPlayable {
 
   get symbol(): OwnerSymbol;
-  set symbol(symb: OwnerSymbol);
+  set symbol(value: OwnerSymbol);
+  set symbolWRA(value: OwnerSymbol);
 
   get gridPlayerD(): PlayerDirector | undefined;
 
   get infer(): OwnerSymbol;
 
-  registerSymbolAction(): void;
+  requestSymbolAction(): void;
+  requestNewSymbAct(): void;
 
   get userInteraction(): boolean;
   set userInteraction(value: boolean);

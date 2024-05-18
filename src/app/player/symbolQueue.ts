@@ -1,4 +1,5 @@
 import { GridComponent } from "../grid/grid.component";
+import { Actions, ClsSymbAct } from "./action";
 import { PlayerDirector } from "./playerDirector";
 import { ClassifiedSymbol, Owner, OwnerSymbol, Symbol, Symbols } from "./symbol";
 
@@ -64,18 +65,19 @@ export class SymbolQueue {
   public rollDice(player: Owner, index?: number, beforeShift?: boolean): OwnerSymbol {
     let symbol = SymbolQueue.pickSymbol(player);
 
-    let decayIn = Symbols.decodeDecayOpt(symbol.decayOpt);
-    if (decayIn !== null && decayIn !== undefined && decayIn <= 0) {
-      let symbolAction = Symbols.getSymbolActionGrid(this.grid, symbol.toOwnerSymbol(player));
+    if (Actions.actFrom(symbol.represent)?.decayOpt === '$before_placement') {
+      let clsSymbAct = Actions.actFrom(symbol.represent);
 
-      if (symbolAction) {
-        Symbols.decodeDecayOptFor(symbolAction);
+      if (clsSymbAct) {
+        Actions.decodeDecayOptOf(clsSymbAct);
 
-        if (symbolAction.decayIn !== null && index !== undefined) {
-          symbolAction.decayIn += this.decayBeforePlacement(index, beforeShift);
+        let symbAct = clsSymbAct.toSymbolActionGrid(this.grid, symbol.toOwnerSymbol(player));
+
+        if (symbAct.decayIn !== null && index !== undefined) {
+          symbAct.decayIn += this.decayBeforePlacement(index, beforeShift);
         }
 
-        this.grid.symbolActionStack.placeOnTop(symbolAction);
+        this.grid.symbolActionStack.placeOnTop(symbAct);
       }
     }
 

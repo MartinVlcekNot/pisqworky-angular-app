@@ -1,4 +1,5 @@
 import { Event } from '../../eventHandler/event';
+import { IOneRoundClass } from '../../styleClassManagement/oneRoundClassInterface';
 import { Cell } from '../cell/cell';
 import { GridComponent } from '../grid/grid.component';
 import { IPlayable } from './playableInterface';
@@ -26,6 +27,9 @@ export class PlayerDirector {
   protected playerSwitched(curPlayer: Owner) {
     this.playerSwitch.invoke(this, { playerValue: curPlayer });
   }
+  protected onPlayerSwitched = (sender: object | undefined, args: { playerValue: Owner }) => {
+
+  }
 
   protected grid: GridComponent;
 
@@ -34,6 +38,8 @@ export class PlayerDirector {
   public constructor(grid: GridComponent) {
     this.grid = grid;
     this.symbolQueue = new SymbolQueue(this.grid, Symbols.players);
+
+    this.playerSwitch.addSubscriber(this.onPlayerSwitched);
   }
 
   // nastaví hráče na začínajícího hráče
@@ -54,13 +60,15 @@ export class PlayerDirector {
       this.player = Owner.circle;
   }
 
-  public play(cell: IPlayable) {
+  public play(cell: IPlayable & IOneRoundClass) {
     cell.symbol = this.symbolQueue.fetchSymbol(this.player);
+    cell.requestNewSymbAct();
     cell.userInteraction = false;
+    cell.addOneRoundClasses(["active"]);
 
     cell.gridPlayerD?.switchPlayer();
 
     // až po přehození hráče
-    cell.registerSymbolAction();
+    this.grid.symbolActionStack.registerActions();
   }
 }

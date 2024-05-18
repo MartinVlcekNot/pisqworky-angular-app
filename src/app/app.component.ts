@@ -106,7 +106,7 @@ export class AppComponent implements IBoundsStyle {
     return undefined;
   }
 
-  constructor(protected gridService: GridService, private cellService: CellService) {
+  constructor(protected gridService: GridService, protected cellService: CellService) {
     console.log(Symbols.oddsString);
   }
 

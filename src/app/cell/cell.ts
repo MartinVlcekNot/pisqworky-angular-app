@@ -15,6 +15,8 @@ import { IPlayable } from '../player/playableInterface';
 import { PlayerDirector } from '../player/playerDirector';
 import { IGridCell } from '../grid/gridCellInterface';
 import { GridComponent } from '../grid/grid.component';
+import { Actions } from '../player/action';
+import { IOneRoundClass } from '../../styleClassManagement/oneRoundClassInterface';
 
 // Třída 'Cell' slouží jako schránka pro data a operace potřebné pro chod komponentu './cell-shell/cell-shell.component.CellShellComponent'.
 // N instancí 'Cell' je generováno v případě, že dojde ke změně šířky mřížky '../grid/(grid.component).GridComponent' a tato změna
@@ -26,7 +28,7 @@ import { GridComponent } from '../grid/grid.component';
 //    viz '../../styleClassManagement/classManagementInterface.IClassManagement'
 //    viz 'IPlayable'
 
-export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IPlayable, IGridCell {
+export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IOneRoundClass, IGridCell {
 
   // komponent './cell-shell/cell-shell.component.CellShellComponent', který v sobě tento objekt zapouzdří
   private _shell: CellShellComponent | undefined;
@@ -58,12 +60,17 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
   private _symbol: OwnerSymbol = Symbols.N;
   public get symbol() { return this._symbol; }
   public set symbol(value: OwnerSymbol) {
+    this.symbolWRA = value;
+    this.grid?.symbolActionStack.removeSymbAct(this);
+  }
+  public set symbolWRA(value: OwnerSymbol) {
     this._symbol = value;
 
     if (this.shell)
       this.decodeSymbolSrc();
 
-    this.grid?.symbolActionStack.removeSymbAct(this);
+    if (this.symbol.represent === Symbol.none)
+      this.userInteraction = true;
   }
 
   public decodeSymbolSrc() {
@@ -87,13 +94,17 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
     return Symbols.N;
   }
 
-  public registerSymbolAction() {
+  public requestNewSymbAct() {
     this.grid?.symbolActionStack.removeSymbAct(this);
 
-    let symbAct = Symbols.getSymbolActionCell(this);
+    this.requestSymbolAction();
+  }
+
+  public requestSymbolAction() {
+    let symbAct = Actions.actFrom(this.symbol.represent)?.toSymbolActionCell(this);
 
     if (symbAct)
-      this.grid?.symbolActionStack.placeOnTop(symbAct);
+      this.grid?.symbolActionStack.requestAction(symbAct);
   }
 
   public get grid(): GridComponent | undefined {
@@ -109,10 +120,10 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
 
     if (this.userInteraction) {
       this.allowCheckingWin = true;
-      this.addClasses(["inactive"]);
+      this.addClasses(["enabled"]);
     }
     else {
-      this.removeClasses(["inactive"]);
+      this.removeClasses(["enabled"]);
     }
   }
 
@@ -188,6 +199,11 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
   }
   // </operace se stylovými třídami>
 
+  public addOneRoundClasses(classes: Array<string>) {
+    if (this.grid) 
+      this.grid.symbolActionStack.placeOnTop(Actions.oneRoundClass.toSymbolActionCell(this, classes, true));
+  }
+
   // nastaví buňku do počátečního stavu
   public clearAndSetUp() {
     this.userInteraction = true;
@@ -208,8 +224,7 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
 
         console.log("vyhrává " + Owner[this.symbol.owner] + "!!!");
 
-        this.gridService.setClassesExceptOf(line, ["inactive"], false);
-        this.gridService.setClassesExceptOf(line, ["irrelevant"], true);
+        this.gridService.setClassesExcluding(line, ["irrelevant"], true);
       }
 
       return true;
@@ -219,8 +234,8 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
   }
 
   public constructor(public readonly cellService: CellService, public readonly gridService: GridService, cmService: ClassManagementService) {
-    this.symbol = Symbols.N;
     this.classManagementService = cmService;
+    this.symbol = Symbols.N;
 
     this.parentObj.parentChange.addSubscriber(this.onParentChanged);
     this.shellAttach.addSubscriber(this.onAttachedToShell);
@@ -232,18 +247,12 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IP
     if (this.userInteraction) {
       this.gridPlayerD?.play(this);
 
-      this.removeClasses(["inactive"]);
+      this.removeClasses(["enabled"]);
 
       if (this.grid) {
         let checkWinManager = this.gridService.createChWM(this.grid);
         checkWinManager.winFound = this.checkWin();
       }
-      /*else
-        this.checkWin();*/
-
-      this.addClasses(["active"]);
-      if (this.grid)
-        this.gridService.setClassesExceptOf([this], ["active"], false);
     }
   }
 }

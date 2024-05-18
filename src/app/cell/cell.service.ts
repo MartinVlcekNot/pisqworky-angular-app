@@ -20,7 +20,7 @@ import { IGridCell } from '../grid/gridCellInterface';
 export class CellService {
 
   // stylové třídy před uživatelskou interakcí
-  public readonly defaultClasses = ["inactive"];
+  public readonly defaultClasses = ["enabled"];
 
   // velikost buňky v px
   public readonly cellBounds = 32;
@@ -97,6 +97,17 @@ export class CellService {
     return false;
   }
 
+  public addToPos(pos: Pos<CPos>, down: number, right: number): Pos<CPos> {
+    if (pos.pos.column !== undefined && pos.pos.row !== undefined) {
+      let column = pos.pos.column + right;
+      let row = pos.pos.row - down;
+
+      return new Pos(new CPos(row, column));
+    }
+
+    return new Pos(new CPos());
+  }
+
   // <algoritmus rozhodující o vítězství>
 
   // vrátí pole stejných symbolů jdoucích v daném směru neprodleně za sebou
@@ -112,22 +123,22 @@ export class CellService {
 
       if (owner !== Owner.nobody) {
         for (let i = 1; i <= inLine - 1; i++) {
-          if (posCell.posObj.pos.column !== undefined && posCell.posObj.pos.row !== undefined) {
-            let column = posCell.posObj.pos.column - i * direction.down;
-            let row = posCell.posObj.pos.row - i * direction.right;
+          let newPos = this.addToPos(posCell.posObj, i * direction.down, i * direction.right)
+          /*if (posCell.posObj.pos.column !== undefined && posCell.posObj.pos.row !== undefined) {
+            let column = posCell.posObj.pos.column + i * direction.right;
+            let row = posCell.posObj.pos.row + i * direction.down;*/
 
-            if (this.isInBounds(grid, new Pos(new CPos(row, column)))) {
-              let cell = grid.grid[row].row[column];
+          if (this.isInBounds(grid, newPos)) {
+            let cell = grid.gridService.getCellByPos(grid, newPos);
 
-              if (cell.symbol.owner === owner) {
-                line.push(cell);
-              }
-              else
-                break;
+            if (cell && cell.symbol.owner === owner) {
+              line.push(cell);
             }
             else
               break;
           }
+          else
+            break;
         }
       }
     }
@@ -176,6 +187,10 @@ export class CellService {
       allDirections.push(this.invertDirection(directions[i]));
 
     return allDirections;
+  }
+
+  public getHorVertDirs() {
+    return this.getAllDirections().filter((dir) => !(Math.abs(dir.down) === 1 && Math.abs(dir.right) === 1));
   }
 
   // vrátí takové pole stejných symbolů jdoucích v daném směru neprodleně za sebou, kde délka pole je větší nebo rovna minimálnímu počtu symbolů

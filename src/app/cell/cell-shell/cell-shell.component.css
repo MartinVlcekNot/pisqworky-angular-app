@@ -3,20 +3,24 @@
   filter: grayscale(100%) brightness(95%);
 }
 
-.inactive {
+.enabled {
   background-color: #eeeeee;
 }
 
-  .inactive:hover {
+  .enabled:hover {
     background-color: #dddddd;
   }
 
 .active {
-  background-color: #fdf6c9
+  background-color: #fdf6c9;
 }
 
-  .active:hover {
-    background-color: #fef095
+.blasted {
+  background-color: #efcd9780;
+}
+
+  .blasted:hover {
+    background-color: #ecac7396;
   }
 
 .grid-cell {

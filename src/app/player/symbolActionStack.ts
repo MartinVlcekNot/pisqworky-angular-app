@@ -4,22 +4,71 @@ import { GridService } from "../grid/grid.service";
 import { Owner, Symbol } from "./symbol";
 import { Cell } from "../cell/cell";
 import { SymbolAction } from "./action";
+import { Event } from "../../eventHandler/event";
 
 export class SymbolActionStack {
 
   protected grid: GridComponent;
   protected readonly gridService: GridService;
 
-  protected stack: Array<SymbolAction<Cell | GridComponent>> = [];
+  protected stack: Array<SymbolAction> = [];
+  protected requestStack: Array<SymbolAction> = [];
+  protected stackStash: Array<SymbolAction> = [];
 
-  public placeOnTop(symbAct: SymbolAction<Cell | GridComponent>) {
-    this.stack.push(symbAct);
+  public placeOnTop(symbAct: SymbolAction) {
+    if (!this.invoking)
+      this.stack.push(symbAct);
+    else {
+      this.stackStash.push(symbAct);
+
+      if (this.invokingFinish.subscribers.length <= 0)
+        this.invokingFinish.addSubscriber(this.onInvokingFinished);
+    }
   }
 
-  public invokeStack() {
-    let remove: Array<SymbolAction<Cell | GridComponent>> = [];
+  public requestAction(symbAct: SymbolAction) {
+    this.requestStack.push(symbAct);
+  }
 
-    this.stack.forEach((symbAct) => {
+  public registerActions() {
+    this.stack.push(...this.requestStack.splice(0));
+  }
+
+  private _invoking = false;
+  public get invoking() { return this._invoking; }
+  private set invoking(value: boolean) {
+    let previous = this._invoking;
+
+    this._invoking = value;
+
+    if (!this.invoking && previous)
+      this.invokingFinished(this.invoking);
+  }
+
+  public invokingFinish: Event<{ invoking: boolean }> = new Event();
+  private invokingFinished(invoking: boolean) {
+    this.invokingFinish.invoke(this, { invoking: invoking });
+  }
+  private onInvokingFinished = (sender: object | undefined, args: { invoking: boolean }) => {
+    this.stack.push(...this.stackStash);
+    const stashLength = this.stackStash.length;
+    this.stackStash = [];
+    this.invokingFinish.clearSubscribers();
+
+    this.invokeStack(this.stack.length - stashLength);
+  }
+
+  public invokeStack(startIndex?: number) {
+    this.invoking = true;
+
+    let remove: Array<SymbolAction> = [];
+    let invoked: Array<SymbolAction> = [];
+
+    const startI = startIndex !== undefined ? startIndex : 0;
+
+    for (let i = startI; i < this.stack.length; i++) {
+      let symbAct = this.stack[i];
+
       if (this.stack.includes(symbAct)) {
         let invoke = true;
 
@@ -38,20 +87,35 @@ export class SymbolActionStack {
 
         if (invoke) {
           symbAct.args = symbAct.action(symbAct.obj, symbAct.decayIn, symbAct.args);
-          console.log(symbAct);
+          invoked.push(symbAct);
         }
       }
-    });
+    }
+
+    console.log(invoked);
 
     this.stack = this.stack.filter((symbAct) => !remove.includes(symbAct));
     this.orderSymbolActions();
-    console.log(this.stack);
+
+    this.invoking = false;
 
     this.grid.gridService.checkGridWin(this.grid);
   }
 
-  public removeSymbAct(cell: Cell) {
-    this.stack = this.stack.filter((symbAct) => symbAct.obj !== cell);
+  public removeSymbAct(cell: Cell, includeRequest: boolean = true, includeStash: boolean = true): Array<SymbolAction> {
+    let result = this.stack.filter((symbAct) => symbAct.obj === cell && !symbAct.immutable);
+    this.stack = this.stack.filter((symbAct) => symbAct.obj !== cell || symbAct.immutable);
+
+    if (includeRequest) {
+      result.push(...this.requestStack.filter((symbAct) => symbAct.obj === cell && !symbAct.immutable));
+      this.requestStack = this.requestStack.filter((symbAct) => symbAct.obj !== cell || symbAct.immutable);
+    }
+    if (includeStash) {
+      result.push(...this.stackStash.filter((symbAct) => symbAct.obj === cell && !symbAct.immutable));
+      this.stackStash = this.stackStash.filter((symbAct) => symbAct.obj !== cell || symbAct.immutable);
+    }
+
+    return result;
   }
 
   public clearStack() {
@@ -59,12 +123,12 @@ export class SymbolActionStack {
   }
 
   public orderSymbolActions() {
-    let patchSymbActions = this.stack.filter((patchSymbAct) => patchSymbAct.forSymbol.represent === Symbol.patch);
-    let output: Array<SymbolAction<Cell | GridComponent>> = [];
+    let patchSymbActions = this.stack.filter((patchSymbAct) => patchSymbAct.forSymbol?.represent === Symbol.patch);
+    let output: Array<SymbolAction> = [];
 
     this.stack = this.stack.filter((symbAct) => !patchSymbActions.includes(symbAct));
 
-    let symbQueue = this.grid.playerDirector.symbolQueue;
+    const symbQueue = this.grid.playerDirector.symbolQueue;
 
     for (let i = 0; i <= symbQueue.decayBeforePlacement(symbQueue.queueLength - 1); i++) {
       let psa = patchSymbActions.find((patchSymbAct) => patchSymbAct.decayIn === i);

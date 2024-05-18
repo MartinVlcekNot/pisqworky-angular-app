@@ -1,7 +1,7 @@
 import { Cell } from "../cell/cell";
 import { GridComponent } from "../grid/grid.component";
 import { IPlayable } from "./playableInterface";
-import { ActionFunc, Actions, SymbolAction } from "./action";
+import { ActionFunc, Action, SymbolAction, Actions, ClsSymbAct } from "./action";
 
 // Výčet 'Owner' je souhrn hodnot, kterých může nabývat majitel určité buňky (viz '../cell.cell.Cell').
 // 'cross' -> křížek
@@ -24,6 +24,7 @@ export enum Symbol {
   disguise,
   patch,
   turret,
+  debris,
 }
 
 export enum ClassifierToken {
@@ -38,11 +39,9 @@ export class ClassifiedSymbol {
   public textOut: string;
   public src: string;
   public odds?: number;
-  public action?: ActionFunc<Cell | GridComponent>;
-  public decayIn: number;
-  public decayOpt?: string;
+  public action?: ClsSymbAct;
 
-  constructor(represent: Symbol, forOpt: Array<Owner>, clsToken: ClassifierToken, textOut: string, src?: string, odds?: number, action?: ActionFunc<Cell | GridComponent>, decayIn?: number, lastForOpt?: string) {
+  constructor(represent: Symbol, forOpt: Array<Owner>, clsToken: ClassifierToken, textOut: string, src?: string, odds?: number, action?: ClsSymbAct) {
     this.represent = represent;
     this.ownerOpt = forOpt;
     this.clsToken = clsToken;
@@ -55,13 +54,6 @@ export class ClassifiedSymbol {
 
     this.odds = odds;
     this.action = action;
-
-    if (!decayIn)
-      this.decayIn = 1;
-    else
-      this.decayIn = decayIn;
-
-    this.decayOpt = lastForOpt;
   }
 
   public toOwnerSymbol(owner?: Owner): OwnerSymbol {
@@ -131,22 +123,19 @@ export class Symbols {
       Symbol.bomb,
       [Owner.nobody],
       ClassifierToken.special,
-      '¤',
+      'B',
       undefined,
       10,
-      Actions.bombAction,
-      undefined,
-      '$random 8'
+      Actions.bomb
     ),
     new ClassifiedSymbol(
       Symbol.rogue,
       [Owner.nobody, ...this.players],
       ClassifierToken.special,
-      '8',
+      'R',
       '$symbol+_o_+$owner',
       6,
-      Actions.rogueAction,
-      1
+      Actions.rogue
     ),
     new ClassifiedSymbol(
       Symbol.disguise,
@@ -163,9 +152,7 @@ export class Symbols {
       'P',
       '$symbol+_o_+$owner',
       7,
-      Actions.patchAction,
-      undefined,
-      '$before_placement'
+      Actions.patch
     ),
     new ClassifiedSymbol(
       Symbol.turret,
@@ -174,10 +161,17 @@ export class Symbols {
       'T',
       undefined,
       3,
-      Actions.turretAction,
-      undefined,
-      '$forever'
-    )
+      Actions.turret
+    ),
+    new ClassifiedSymbol(
+      Symbol.debris,
+      [Owner.nobody],
+      ClassifierToken.special,
+      'D',
+      '$symbol',
+      0,
+      Actions.debris
+    ),
   ];
 
   public static symbFrom(symbol: Symbol): ClassifiedSymbol {
@@ -226,8 +220,8 @@ export class Symbols {
 
   public static get oddsString() {
     let str = "";
-    this.odds.forEach((odd) => {
-      str += `${Symbol[odd.symbol.represent]}: ${odd.odds * 100} %\n`;
+    this.odds.forEach((chance) => {
+      str += `${Symbol[chance.symbol.represent]}: ${chance.odds * 100} %\n`;
     });
     return str;
   }
@@ -260,79 +254,5 @@ export class Symbols {
     symbol.src = source;
 
     return source;
-  }
-
-  public static getSymbolActionCell(cell: Cell): SymbolAction<Cell | GridComponent> | undefined {
-    let clsSymb = this.symbFrom(cell.symbol.represent);
-    let action = clsSymb.action;
-    let decayIn: number | null = clsSymb.decayIn;
-
-    if (action) {
-      let symbAct = {
-        forSymbol: cell.symbol,
-        action: action,
-        obj: cell,
-        decayIn: decayIn,
-        decayOpt: clsSymb.decayOpt
-      };
-
-      this.decodeDecayOptFor(symbAct);
-
-      if (symbAct.decayIn !== null && symbAct.decayIn <= 0)
-        return undefined;
-
-      return symbAct;
-    }
-
-    return undefined;
-  }
-
-  public static getSymbolActionGrid(grid: GridComponent, symbol: OwnerSymbol): SymbolAction<Cell | GridComponent> | undefined {
-    let clsSymb = this.symbFrom(symbol.represent);
-    let action = clsSymb.action;
-    let decayIn = clsSymb.decayIn;
-
-    if (action) {
-      return {
-        forSymbol: symbol,
-        action: action,
-        obj: grid,
-        decayIn: decayIn,
-        decayOpt: clsSymb.decayOpt
-      }
-    }
-
-    return undefined;
-  }
-
-  public static decodeDecayOpt(decayOpt: string | undefined): number | null | undefined {
-    if (decayOpt) {
-      let com = decayOpt.split(' ');
-
-      switch (com[0]) {
-        case '$random':
-          return Math.ceil(Math.random() * Number(com[1]));
-        case '$before_placement':
-          return 0;
-        case '$forever':
-          return null;
-      }
-    }
-
-    return undefined;
-  }
-
-  public static decodeDecayOptFor<TObj>(symbolAction: SymbolAction<TObj>): number | null | undefined {
-    if (symbolAction.decayOpt) {
-      let decayIn = this.decodeDecayOpt(symbolAction.decayOpt);
-
-      if (decayIn !== undefined) {
-        symbolAction.decayIn = decayIn;
-
-        return decayIn;
-      }
-    }
-
-    return undefined;
   }
 }

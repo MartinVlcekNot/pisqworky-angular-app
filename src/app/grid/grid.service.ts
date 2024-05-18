@@ -151,7 +151,7 @@ export class GridService {
 
   // nastaví stylové třídy všech buněk '../cell/cell.Cell' vyjma zadaných buněk v zadané mřížce './(grid.component).GridComponent'
   // add: true -> přidá třídy; false -> odebere třídy
-  public setClassesExceptOf(excCells: Array<IGridCell>, classes: Array<string>, add: boolean) {
+  public setClassesExcluding(excCells: Array<IGridCell>, classes: Array<string>, add: boolean) {
     let grids: Array<GridComponent> = [];
 
     excCells.forEach((excCell) => {
@@ -161,10 +161,7 @@ export class GridService {
 
     grids.forEach((grid) => {
       this.forEachCell(grid, (cell) => {
-        let exceptional = false;
-
-        if (excCells.includes(cell))
-          exceptional = true;
+        let exceptional = excCells.includes(cell);
 
         if (!exceptional) {
           if (add)
@@ -185,6 +182,10 @@ export class GridService {
       else
         cell.classManagementService.removeClasses(cell, classes);
     });
+  }
+
+  public setClasses(grid: GridComponent, classes: Array<string>, add: boolean) {
+    this.setClassesOf(this.getAllCells(grid), classes, add);
   }
 
   // nastaví hodnotu pole '../cell/cell.Cell.interactable' všech buněk '../cell/cell.Cell' v zadané mřížce './(grid.component).GridComponent'
@@ -224,10 +225,10 @@ export class GridService {
 
   // vrátí buňku '../cell/cell.Cell' v zadané mřížce './(grid.component).GridComponent' podle zadaných souřadnic
   public getCellByPos(grid: GridComponent, pos: Pos<CPos>): Cell | undefined {
-    if (pos.pos.row) {
+    if (pos.pos.row !== undefined) {
       const row = grid.grid[pos.pos.row];
 
-      if (row && pos.pos.column) {
+      if (row && pos.pos.column !== undefined) {
         const cell = row.row[pos.pos.column];
 
         return cell;
