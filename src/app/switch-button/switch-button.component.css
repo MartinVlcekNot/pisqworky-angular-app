@@ -1,20 +1,71 @@
-.switch-button {
-  display: inline-block;
-  width: 100px;
-  height: 35px;
-  background-color: #e0e0e0;
+:host {
+  --bg-gray: #eee;
+  --btn-knob-gray: #ccc;
+  --btn-knob-gray-hover: #bbb;
+  --bg-blue: #307fd7;
+  --bg-blue-hover: #1f6ec6;
+}
+
+.switch-btn {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
   border: none;
-  border-radius: 0;
-  position: relative;
+  margin: 0;
+  padding: 0;
   cursor: pointer;
 }
 
-  .switch-button.off {
-    background-color: #e0e0e0;
-    text-align: left;
+  .switch-btn:hover {
+    background-color: #fff;
   }
 
-  .switch-button.on {
-    background-color: #87cefa;
-    text-align: right;
+.switch-display {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  display: flex;
+  border: 3px solid;
+  flex-direction: row;
+}
+
+  .switch-display.off {
+    background-color: var(--bg-gray);
+    border-color: var(--btn-knob-gray);
   }
+
+    .switch-display.off:hover {
+      border-color: var(--btn-knob-gray-hover);
+    }
+
+  .switch-display.on {
+    background-color: var(--bg-blue);
+    border-color: var(--bg-blue);
+  }
+
+    .switch-display.on:hover {
+      background-color: var(--bg-blue-hover);
+      border-color: var(--bg-blue-hover);
+    }
+
+.switch-division {
+  width: 50%;
+  height: 100%;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+}
+
+.switch-icon {
+  border-radius: 0;
+  background-color: inherit;
+}
+
+.switch-knob {
+  background-color: var(--btn-knob-gray);
+  border-radius: 4px;
+}
+

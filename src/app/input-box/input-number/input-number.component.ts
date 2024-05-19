@@ -14,19 +14,6 @@ import { InputBoxElem, InputBoxShComponent } from '../input-box-sh/input-box-sh.
 export class InputNumberComponent extends InputBoxShComponent<number> {
 
   // viz '../(input-box.component).InputBoxComponent'
-  public override valueRegulations = { bottomExcl: 0, topIncl: 40 };
-
-  // viz '../(input-box.component).InputBoxComponent'
-  public override valueValidationFunc = (value: number | undefined) => {
-    if (value !== undefined) {
-      if (value > this.valueRegulations.bottomExcl && value <= this.valueRegulations.topIncl)
-        return true;
-    }
-
-    return false;
-  }
-
-  // viz '../(input-box.component).InputBoxComponent'
   public override converterFunc = (value: string) => {
     let num = parseInt(value);
 
@@ -43,6 +30,7 @@ export class InputNumberComponent extends InputBoxShComponent<number> {
     for (let i = 0; i <= 9; i++) {
       digits.push(i.toString());
     } // digits = ['0', '1', ... '9'];
+    digits.push(...['+', '-', '.']);
 
     let syl = value.split(' ')
     let str: Array<string> = [];

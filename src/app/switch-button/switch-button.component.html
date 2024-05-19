@@ -1,7 +1,17 @@
-<button *ngIf="!on" class="switch-button off" (click)="switch()">
-  OFF
-</button>
-
-<button *ngIf="on" class="switch-button on" (click)="switch()">
-  ON
+<button class="switch-btn" (click)="switch()">
+  <div class="switch-display {{on ? 'on' : 'off'}}">
+    @if (on) {
+    <div class="switch-division switch-icon">
+      <img src="assets/images/off.png" alt="off_icon"/>
+    </div>
+    }
+    <div class="switch-division switch-knob">
+      <img src="assets/images/btn_knob.png" alt="button_knob_icon"/>
+    </div>
+    @if (!on) {
+    <div class="switch-division switch-icon">
+      <img src="assets/images/on.png" alt="on_icon"/>
+    </div>
+    }
+  </div>
 </button>

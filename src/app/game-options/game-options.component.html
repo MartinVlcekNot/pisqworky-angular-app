@@ -1,7 +1,9 @@
 <div id="inputs">
-  <input-number [data]="getInpMunElemByName('width')"></input-number>
-  <input-number [data]="getInpMunElemByName('height')"></input-number>
-  <input-number [data]="getInpMunElemByName('inRow')"></input-number>
+  <input-num-strict [data]="getInpMunElemByName('width')"></input-num-strict>
+  <input-num-strict [data]="getInpMunElemByName('height')"></input-num-strict>
+  <input-num-strict [data]="getInpMunElemByName('inRow')"></input-num-strict>
 
-  <switch-button></switch-button>
+  <div class="btn-lg">
+    <switch-button></switch-button>
+  </div>
 </div>

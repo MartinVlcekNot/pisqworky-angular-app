@@ -28,6 +28,9 @@ export class GameOptionsComponent {
   }
 
   public gamemode: Gamemode = Gamemode.normal;
+
+  protected get isNormal(): boolean { return this.gamemode === Gamemode.normal; }
+  protected get isEnhanced(): boolean { return this.gamemode === Gamemode.enhanced; }
 }
 
 export type OptionsElem = {
