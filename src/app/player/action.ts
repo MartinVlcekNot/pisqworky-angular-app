@@ -155,8 +155,8 @@ export type CellOrGrid = Cell | GridComponent;
 export type ActionFunc = (obj: CellOrGrid, decayIn: number | null, args?: AFArgs) => AFArgs;
 
 export type SymbolAction = {
-  action: ActionFunc
-  obj: CellOrGrid
+  action: ActionFunc;
+  obj: CellOrGrid;
   decayIn: number | null;
   immutable: boolean;
   forSymbol?: OwnerSymbol;

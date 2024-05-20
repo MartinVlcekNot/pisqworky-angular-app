@@ -15,6 +15,7 @@ import { ClassManagementService } from '../styleClassManagement/class-management
 import { InputBoxShComponent } from './input-box/input-box-sh/input-box-sh.component';
 import { SwitchButtonComponent } from './switch-button/switch-button.component';
 import { InputNumStrictComponent } from './input-box/input-num-strict/input-num-strict.component';
+import { SwitchableOptionComponent } from './switchable-option/switchable-option.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { InputNumStrictComponent } from './input-box/input-num-strict/input-num-
     InputBoxShComponent,
     SwitchButtonComponent,
     InputNumStrictComponent,
+    SwitchableOptionComponent,
   ],
   imports: [
     BrowserModule,

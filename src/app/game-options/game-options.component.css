@@ -5,7 +5,15 @@
   width: 200px;
 }
 
-.btn {
-  width: 58px;
-  height: 29px;
+hr {
+  display: block;
+  border: 0;
+  box-sizing: border-box;
+  border-top: 1px solid #000;
+  margin: 1em 0;
+  padding: 0;
+}
+
+#gamemode {
+  width: 100%;
 }

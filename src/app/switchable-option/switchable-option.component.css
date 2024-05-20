@@ -1,0 +1,29 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 3px;
+  box-sizing: border-box;
+  background-color: var(--bg-gray);
+}
+
+#label {
+  width: auto;
+  margin: 0 auto 0 0;
+  text-align: left;
+  align-content: center;
+  padding-left: 3px;
+}
+
+.switch-container {
+  margin-right: 0;
+}
+
+#switch {
+
+}
+
+.button-m {
+  width: 58px;
+  height: 29px;
+}

@@ -3,7 +3,12 @@
   <input-num-strict [data]="getInpMunElemByName('height')"></input-num-strict>
   <input-num-strict [data]="getInpMunElemByName('inRow')"></input-num-strict>
 
-  <div class="btn-lg">
-    <switch-button></switch-button>
+  <hr/>
+
+  <div id="gamemode" class="btn">
+    <switchable-option [labelText]="'option1'" (switchEvent)="switchGamemode($event)"></switchable-option>
+    @if (isEnhanced) {
+    <p>funguje</p>
+    }
   </div>
 </div>

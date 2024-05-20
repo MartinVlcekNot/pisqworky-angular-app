@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { AppComponent } from '../app.component';
 import { Gamemode } from './gamemode';
 import { InputNumElem } from '../input-box/input-number/input-number.component';
+import { SwitchEvent } from '../switch-button/switch-button.component';
 
 @Component({
   selector: 'game-options',
@@ -28,6 +29,13 @@ export class GameOptionsComponent {
   }
 
   public gamemode: Gamemode = Gamemode.normal;
+
+  protected switchGamemode = (event: SwitchEvent) => {
+    if (event.args.on)
+      this.gamemode = Gamemode.enhanced;
+    else
+      this.gamemode = Gamemode.normal;
+  }
 
   protected get isNormal(): boolean { return this.gamemode === Gamemode.normal; }
   protected get isEnhanced(): boolean { return this.gamemode === Gamemode.enhanced; }

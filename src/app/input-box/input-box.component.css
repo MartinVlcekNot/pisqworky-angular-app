@@ -5,7 +5,7 @@
   width: 200px;
   height: 35px;
   overflow: hidden;
-  background-color: #eeeeee;
+  background-color: var(--bg-gray);
 }
 
 .input-label {
