@@ -4,11 +4,11 @@
 }
 
 .enabled {
-  background-color: #eeeeee;
+  background-color: var(--bg-gray);
 }
 
   .enabled:hover {
-    background-color: #dddddd;
+    background-color: var(--bg-gray-hov);
   }
 
 .active {
@@ -28,11 +28,11 @@
   font-size: 2rem;
   margin: 0;
   padding: 0;
-  border-right: 1px solid #bbbbbb;
-  border-bottom: 1px solid #bbbbbb;
-  border-top: none;
-  border-left: none;
+  border: none;
+  border-right: 1px solid var(--bg-gray-sec-hov);
+  border-bottom: 1px solid var(--bg-gray-sec-hov);
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .cell-bounds {

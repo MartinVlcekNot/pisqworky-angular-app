@@ -10,10 +10,21 @@ hr {
   border: 0;
   box-sizing: border-box;
   border-top: 1px solid #000;
-  margin: 1em 0;
+  margin: 10px 0;
   padding: 0;
 }
 
 #gamemode {
   width: 100%;
+}
+
+#symb-q {
+  width: 100%;
+}
+
+#queues {
+  background-color: var(--bg-gray);
+  padding: 5px 5px 0 5px;
+  box-sizing: border-box;
+  border: 1px solid var(--bg-gray-sec-hov);
 }

@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Cell } from '../cell';
 import { CellService } from '../cell.service';
 import { IBoundsStyle } from '../../boundsStyle/boundsStyleInterface';
+import { DeadCell } from '../deadCell';
 
 // Komponent 'CellShellComponent' je pomyslnou grafickou a interakční stránkou pro celek buňky. Obsahuje instanci ../cell.Cell, která zapouzdřuje
 // data a operace potřebné pro fungování tohoto komponentu jako celku.
@@ -24,9 +25,9 @@ export class CellShellComponent implements IBoundsStyle {
 
   // instance ../cell.Cell
   // nastavuje se jako hodnota atributu 'cell' v šabloně tohoto komponentu (dynamická hodnota)
-  private _cell: Cell | undefined;
-  public get cell(): Cell | undefined { return this._cell };
-  @Input() public set cell(value: Cell | undefined) {
+  private _cell: DeadCell | undefined;
+  public get cell(): DeadCell | undefined { return this._cell };
+  @Input() public set cell(value: DeadCell | undefined) {
     this._cell = value;
 
     if (this.cell !== undefined)
@@ -62,7 +63,7 @@ export class CellShellComponent implements IBoundsStyle {
 
   private _srcRef = "";
   public get srcRef() { return this._srcRef }
-  public set srcRef(value: string) {
+  @Input() public set srcRef(value: string) {
     this._srcRef = `assets/images/${value}.png`;
   }
 

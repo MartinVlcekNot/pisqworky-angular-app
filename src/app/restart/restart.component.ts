@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { GridService } from '../grid/grid.service';
+import { IGridDependent } from '../grid/gridCellInterface';
+import { GridComponent } from '../grid/grid.component';
 
 // Komponent 'RestartComponent' je tlačítko pužívané na restartování hry v hracím poli '../grid/(grid.component).GridComponent' určené podle
 // jejího id uchovaného v tomto komponentu.
@@ -12,11 +14,15 @@ import { GridService } from '../grid/grid.service';
   templateUrl: './restart.component.html',
   styleUrl: './restart.component.css'
 })
-export class RestartComponent {
+export class RestartComponent implements IGridDependent {
 
   // id hracího pole '../grid/(grid.component).GridComponent', kde bude prováděn restart hry
   // povinnost nastavit skrze stejnojmenný atribut tohoto komponentu (dynamická hodnota)
   @Input() public gridId!: number;
+
+  public get grid(): GridComponent | undefined {
+    return GridService.getGridById(this.gridId);
+  }
 
   // text tlačítka
   // hodnota dynamicky předána do 'innerHTML' tlačítka v šabloně tohoto komponentu
@@ -28,9 +34,7 @@ export class RestartComponent {
 
   // navázáno na událost 'click' v šabloně tohoto komponentu
   protected onClick() {
-    let grid = GridService.getGridById(this.gridId);
-
-    if (grid)
-      this.gridService.clearAndSetUpGrid(grid);
+    if (this.grid)
+      this.gridService.clearAndSetUpGrid(this.grid);
   }
 }

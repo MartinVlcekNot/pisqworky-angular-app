@@ -1,0 +1,15 @@
+.container {
+  width: 100%;
+  height: auto;
+  background-color: inherit;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row-reverse;
+  margin-bottom: 5px;
+}
+
+.cell {
+  margin: 0 auto;
+  border-top: 1px solid var(--bg-gray-sec-hov);
+  border-left: 1px solid var(--bg-gray-sec-hov);
+}

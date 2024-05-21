@@ -5,7 +5,8 @@ export interface IPlayable {
 
   get symbol(): OwnerSymbol;
   set symbol(value: OwnerSymbol);
-  set symbolWRA(value: OwnerSymbol);
+
+  setSymbolWRA(value: OwnerSymbol): void;
 
   get gridPlayerD(): PlayerDirector | undefined;
 

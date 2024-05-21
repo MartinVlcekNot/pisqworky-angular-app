@@ -1,9 +1,13 @@
 <table id="playfield" [style]="boundsStyle">
   <tbody>
-    <tr *ngFor="let row of grid">
-      <td class="nomargin nopadding" *ngFor="let cell of row.row">
+    @for (row of grid; track row) {
+    <tr>
+      @for (cell of row.row; track cell) {
+      <td class="nomargin nopadding">
         <cell-shell [cell]="cell"></cell-shell>
       </td>
+      }
     </tr>
+    }
   </tbody>
 </table>

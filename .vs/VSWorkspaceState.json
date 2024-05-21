@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\game-options",
-    "\\src\\app\\input-box",
-    "\\src\\app\\input-box\\input-box-sh",
-    "\\src\\app\\input-box\\input-num-strict",
-    "\\src\\app\\input-box\\input-number",
-    "\\src\\app\\switch-button",
-    "\\src\\assets"
+    "\\src\\app\\cell",
+    "\\src\\app\\cell\\cell-shell",
+    "\\src\\app\\grid",
+    "\\src\\app\\parent",
+    "\\src\\app\\restart",
+    "\\src\\app\\symbol-queue",
+    "\\src\\styleClassManagement"
   ],
-  "SelectedNode": "\\src\\app\\input-box\\input-box.component.html",
+  "SelectedNode": "\\src\\app\\cell\\cell.ts",
   "PreviewInSolutionExplorer": false
 }

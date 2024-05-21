@@ -130,7 +130,7 @@ export class SymbolActionStack {
 
     const symbQueue = this.grid.playerDirector.symbolQueue;
 
-    for (let i = 0; i <= symbQueue.decayBeforePlacement(symbQueue.queueLength - 1); i++) {
+    for (let i = 0; i <= symbQueue.decayBeforePlacement(symbQueue.desiredLength - 1); i++) {
       let psa = patchSymbActions.find((patchSymbAct) => patchSymbAct.decayIn === i);
       if (psa)
         output.push(psa);

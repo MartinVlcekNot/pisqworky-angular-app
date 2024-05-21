@@ -13,10 +13,11 @@ import { IClassManagement } from '../../styleClassManagement/classManagementInte
 import { IBValueChangeArgs } from '../input-box/input-box.component';
 import { IPlayable } from '../player/playableInterface';
 import { PlayerDirector } from '../player/playerDirector';
-import { IGridCell } from '../grid/gridCellInterface';
+import { IGridDependent } from '../grid/gridCellInterface';
 import { GridComponent } from '../grid/grid.component';
 import { Actions } from '../player/action';
 import { IOneRoundClass } from '../../styleClassManagement/oneRoundClassInterface';
+import { DeadCell } from './deadCell';
 
 // Třída 'Cell' slouží jako schránka pro data a operace potřebné pro chod komponentu './cell-shell/cell-shell.component.CellShellComponent'.
 // N instancí 'Cell' je generováno v případě, že dojde ke změně šířky mřížky '../grid/(grid.component).GridComponent' a tato změna
@@ -28,26 +29,11 @@ import { IOneRoundClass } from '../../styleClassManagement/oneRoundClassInterfac
 //    viz '../../styleClassManagement/classManagementInterface.IClassManagement'
 //    viz 'IPlayable'
 
-export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IOneRoundClass, IGridCell {
+export class Cell extends DeadCell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IOneRoundClass, IGridDependent {
 
-  // komponent './cell-shell/cell-shell.component.CellShellComponent', který v sobě tento objekt zapouzdří
-  private _shell: CellShellComponent | undefined;
-  public get shell(): CellShellComponent | undefined { return this._shell }
-  public set shell(value: CellShellComponent | undefined) {
-    let previous = this._shell;
+  protected override onAttachedToShell = (sender: object | undefined, args: { shellValue: CellShellComponent | undefined }) => {
+    this.decodeSymbolSrc();
 
-    this._shell = value;
-
-    if (this.shell !== previous)
-      this.attachedToShell(this.shell);
-  }
-
-  // událost nastávající tehdy, když se změní hodnota 'this._shell' skrze set vlastnost 'this.shell'
-  public shellAttach: Event<{ shellValue: CellShellComponent | undefined }> = new Event();
-  protected attachedToShell(curShell: CellShellComponent | undefined) {
-    this.shellAttach.invoke(this, { shellValue: curShell });
-  }
-  protected onAttachedToShell = (sender: object | undefined, args: { shellValue: CellShellComponent | undefined }) => {
     if (args.shellValue)
       args.shellValue.onClick = this.onShellClick;
 
@@ -55,33 +41,20 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IO
     this.userInteraction = true;
   }
 
-  // vlastník této buňky typu '../player/symbol.ClassifiedSymbol'
-  // vlastnost set nastaví i symbol schránky
-  private _symbol: OwnerSymbol = Symbols.N;
-  public get symbol() { return this._symbol; }
-  public set symbol(value: OwnerSymbol) {
-    this.symbolWRA = value;
+  public override get symbol(): OwnerSymbol {
+    return super.symbol;
+  }
+
+  public override set symbol(value: OwnerSymbol) {
+    this.setSymbolWRA(value);
     this.grid?.symbolActionStack.removeSymbAct(this);
   }
-  public set symbolWRA(value: OwnerSymbol) {
-    this._symbol = value;
-
-    if (this.shell)
-      this.decodeSymbolSrc();
+  public setSymbolWRA(value: OwnerSymbol) {
+    super.symbol = value;
 
     if (this.symbol.represent === Symbol.none)
       this.userInteraction = true;
   }
-
-  public decodeSymbolSrc() {
-    if (this.shell) {
-      this.shell.srcRef = Symbols.decodeSrc(this.symbol);
-
-      this.shell.symbol = this.symbol.textOut;
-    }
-  }
-
-  public readonly classManagementService: ClassManagementService;
 
   public get gridPlayerD(): PlayerDirector | undefined {
     return this.cellService.getGridPlayerD(this);
@@ -164,27 +137,6 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IO
     this.posObj.pos.row = args.rowValue;
   }
 
-  // pole v reálném čase obsahující stylové třídy, které se mají aplikovat
-  private _classes: Array<string> = [];
-  // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
-  public get classes() { return [...this._classes] }
-  // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
-  protected set classes(value: Array<string>) {
-    this._classes = value;
-  }
-
-  // stylové třídy zformátuje a uloží je do pole 'this.shell.classString'
-  // viz '../../styleClassManagement/classManagementInterface.IClassManagement'
-  public toggleClasses(): boolean {
-    if (this.shell !== undefined) {
-      this.shell.classString = this.classManagementService.formatClasses(this.classes);
-
-      return true;
-    }
-
-    return false;
-  }
-
   // <operace se stylovými třídami>
   public addClasses(classes: Array<string>) {
     this.classManagementService.addClasses(this, classes);
@@ -234,8 +186,9 @@ export class Cell implements IPos<CPos>, IChildOf<GridRow>, IClassManagement, IO
   }
 
   public constructor(public readonly cellService: CellService, public readonly gridService: GridService, cmService: ClassManagementService) {
-    this.classManagementService = cmService;
-    this.symbol = Symbols.N;
+    super(cmService);
+
+    //this.symbol = Symbols.N;
 
     this.parentObj.parentChange.addSubscriber(this.onParentChanged);
     this.shellAttach.addSubscriber(this.onAttachedToShell);

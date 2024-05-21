@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Event } from '../../eventHandler/event';
 
 @Component({
@@ -17,6 +17,10 @@ export class SwitchButtonComponent {
 
     if (this.on !== previous)
       this.switched(this.on);
+  }
+
+  @Input() public set initState(value: boolean) {
+    this._on = value;
   }
 
   public switchE: Event<{ on: boolean }> = new Event();

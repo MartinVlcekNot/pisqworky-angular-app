@@ -1,6 +1,6 @@
 import { GridComponent } from "./grid.component";
 
-export interface IGridCell {
+export interface IGridDependent {
 
   get grid(): GridComponent | undefined;
 }

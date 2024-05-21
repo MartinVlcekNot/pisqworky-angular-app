@@ -1,6 +1,6 @@
 :host {
-  --btn-knob-gray: #ccc;
-  --btn-knob-gray-hover: #bbb;
+  --btn-knob-gray: var(--bg-gray-sec);
+  --btn-knob-gray-hover: var(--bg-gray-sec-hov);
   --bg-blue: #307fd7;
   --bg-blue-hover: #1f6ec6;
 }

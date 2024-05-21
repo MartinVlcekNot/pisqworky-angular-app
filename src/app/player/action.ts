@@ -46,11 +46,11 @@ export class Action {
       let symbNum = Math.random() * 3;
 
       if (symbNum < 1 && cell.symbol.represent === Symbol.rogue) {
-        cell.symbolWRA = Symbols.symbFrom(Symbol.rogue).toOwnerSymbol(Owner.nobody);
+        cell.setSymbolWRA(Symbols.symbFrom(Symbol.rogue).toOwnerSymbol(Owner.nobody));
       } else if (symbNum < 2 && cell.symbol.represent === Symbol.rogue) {
-        cell.symbolWRA = Symbols.symbFrom(Symbol.rogue).toOwnerSymbol(Owner.cross);
+        cell.setSymbolWRA(Symbols.symbFrom(Symbol.rogue).toOwnerSymbol(Owner.cross));
       } else if (symbNum <= 3 && cell.symbol.represent === Symbol.rogue) {
-        cell.symbolWRA = Symbols.symbFrom(Symbol.rogue).toOwnerSymbol(Owner.circle);
+        cell.setSymbolWRA(Symbols.symbFrom(Symbol.rogue).toOwnerSymbol(Owner.circle));
       }
     }
   }

@@ -4,7 +4,7 @@ import { GridRow } from './gridRow/gridRow';
 import { Cell, CheckWinManager, CPos } from '../cell/cell';
 import { Pos } from '../position/posClass';
 import { IBValueChangeArgs } from '../input-box/input-box.component';
-import { IGridCell } from './gridCellInterface';
+import { IGridDependent } from './gridCellInterface';
 import { IClassManagement } from '../../styleClassManagement/classManagementInterface';
 import { PlayerDirector } from '../player/playerDirector';
 
@@ -151,7 +151,7 @@ export class GridService {
 
   // nastaví stylové třídy všech buněk '../cell/cell.Cell' vyjma zadaných buněk v zadané mřížce './(grid.component).GridComponent'
   // add: true -> přidá třídy; false -> odebere třídy
-  public setClassesExcluding(excCells: Array<IGridCell>, classes: Array<string>, add: boolean) {
+  public setClassesExcluding(excCells: Array<IGridDependent>, classes: Array<string>, add: boolean) {
     let grids: Array<GridComponent> = [];
 
     excCells.forEach((excCell) => {

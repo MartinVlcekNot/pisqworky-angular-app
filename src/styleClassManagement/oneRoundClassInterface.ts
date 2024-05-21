@@ -1,6 +1,5 @@
-import { IClassManagement } from "./classManagementInterface";
 
-export interface IOneRoundClass extends IClassManagement {
+export interface IOneRoundClass {
 
   addOneRoundClasses(classes: Array<string>): void;
 }

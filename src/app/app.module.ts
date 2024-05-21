@@ -16,6 +16,7 @@ import { InputBoxShComponent } from './input-box/input-box-sh/input-box-sh.compo
 import { SwitchButtonComponent } from './switch-button/switch-button.component';
 import { InputNumStrictComponent } from './input-box/input-num-strict/input-num-strict.component';
 import { SwitchableOptionComponent } from './switchable-option/switchable-option.component';
+import { SymbolQueueComponent } from './symbol-queue/symbol-queue.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { SwitchableOptionComponent } from './switchable-option/switchable-option
     SwitchButtonComponent,
     InputNumStrictComponent,
     SwitchableOptionComponent,
+    SymbolQueueComponent,
   ],
   imports: [
     BrowserModule,

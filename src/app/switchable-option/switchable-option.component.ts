@@ -11,6 +11,8 @@ export class SwitchableOptionComponent {
   // povinné
   @Input() public labelText!: string;
 
+  @Input() public initState: boolean = false;
+
   @Output() public switchEvent: EventEmitter<SwitchEvent> = new EventEmitter();
 
   protected onSwitched = (event: SwitchEvent) => {

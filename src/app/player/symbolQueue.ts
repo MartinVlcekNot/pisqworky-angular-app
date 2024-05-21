@@ -1,3 +1,4 @@
+import { Event } from "../../eventHandler/event";
 import { GridComponent } from "../grid/grid.component";
 import { Actions, ClsSymbAct } from "./action";
 import { PlayerDirector } from "./playerDirector";
@@ -5,27 +6,37 @@ import { ClassifiedSymbol, Owner, OwnerSymbol, Symbol, Symbols } from "./symbol"
 
 export class SymbolQueue {
 
-  public readonly queueLength = 5;
+  public readonly desiredLength = 5;
+  public get queueLength(): number { return this.queue.length; }
 
   protected grid: GridComponent;
 
-  protected queue: Array<{ player: Owner, symbols: Array<OwnerSymbol> }> = [];
+  protected queue: Array<QueueRow> = [];
+
+  public queueRowUpdate: Event<{ row: QueueRow }> = new Event();
+  protected queueRowUpdated(row: QueueRow) {
+    this.queueRowUpdate.invoke(this, { row: row });
+  }
+
+  public findRow(player: Owner): QueueRow | undefined {
+    return this.queue.find((row) => row.player === player);
+  }
 
   public fetchSymbol(player: Owner): OwnerSymbol {
     this.updateQueue(player, true);
 
-    let row = this.queue.find((row) => row.player === player);
+    let row = this.findRow(player);
 
     if (row) {
       let symbol = row.symbols.shift();
 
       this.updateQueue(player);
 
-      let stringRepre = " ";
+      /*let stringRepre = " ";
       row.symbols.forEach((symbol) => {
         stringRepre += Symbol[symbol.represent] + "; ";
       });
-      console.log(`player ${Owner[player]}:\n{${stringRepre}}`);
+      console.log(`player ${Owner[player]}:\n{${stringRepre}}`);*/
 
       if (symbol)
         return symbol;
@@ -93,16 +104,23 @@ export class SymbolQueue {
   }
 
   public updateQueue(player: Owner, beforeShift?: boolean) {
-    let row = this.queue.find((row) => row.player === player);
+    let row = this.findRow(player);
 
     if (row) {
-      for (let i = row.symbols.length; i < this.queueLength; i++) {
+      let changes = false;
+
+      for (let i = row.symbols.length; i < this.desiredLength; i++) {
         row.symbols.push(this.rollDice(player, i, beforeShift));
+        changes = true;
       }
 
-      if (row.symbols.length > this.queueLength) {
-        row.symbols.splice(this.queueLength);
+      if (row.symbols.length > this.desiredLength) {
+        row.symbols.splice(this.desiredLength);
+        changes = true;
       }
+
+      if (changes)
+        this.queueRowUpdated(row);
     }
   }
 
@@ -113,4 +131,9 @@ export class SymbolQueue {
       this.queue.push({ player: player, symbols: [] });
     });
   }
+}
+
+export type QueueRow = {
+  player: Owner;
+  symbols: Array<OwnerSymbol>;
 }

@@ -9,7 +9,7 @@ import { IPos } from '../position/posInterface';
 import { PlayerDirector } from '../player/playerDirector';
 import { IChildOf } from '../parent/parentInterface';
 import { IPlayable } from '../player/playableInterface';
-import { IGridCell } from '../grid/gridCellInterface';
+import { IGridDependent } from '../grid/gridCellInterface';
 
 // Servis 'CellService' obsahuje řadu metod z největší části pro takové operace s datovými schránkami './cell.Cell',
 // které jsou mimo záležitosti samotné buňky. Také je zde místo pro konstantní pole, týkající se vlastnosti buněk, používaná napříč celou aplikací.
@@ -114,7 +114,7 @@ export class CellService {
   // posCell: buňka typu './cell.Cell', na které je počáteční pozice
   // direction: směr typu 'Dir', kterým se bude kontrola symbolů ubírat
   // inLine: počet buněk (včetně té počáteční), na kterém se kontrola symbolů zastaví a vrátí výsledek
-  private getDirection(posCell: IPlayable & IPos<CPos> & IGridCell, direction: Dir, inLine: number): Cell[] {
+  private getDirection(posCell: IPlayable & IPos<CPos> & IGridDependent, direction: Dir, inLine: number): Cell[] {
     let grid = posCell.grid//this.getGridByCell(posCell);
     let line: Array<Cell> = [];
 
