@@ -23,11 +23,11 @@ export class PlayerDirector {
       this.playerSwitched(this.player);
   }
 
-  public playerSwitch: Event<{ playerValue: Owner }> = new Event();
-  protected playerSwitched(curPlayer: Owner) {
-    this.playerSwitch.invoke(this, { playerValue: curPlayer });
+  public playerSwitch: Event<{ player: Owner }> = new Event();
+  protected playerSwitched(player: Owner) {
+    this.playerSwitch.invoke(this, { player: player });
   }
-  protected onPlayerSwitched = (sender: object | undefined, args: { playerValue: Owner }) => {
+  protected onPlayerSwitched = (sender: object | undefined, args: { player: Owner }) => {
 
   }
 

@@ -1,7 +1,8 @@
 import { Event } from "../../eventHandler/event";
 import { ClassManagementService } from "../../styleClassManagement/class-management.service";
 import { IClassManagement } from "../../styleClassManagement/classManagementInterface";
-import { IOneRoundClass } from "../../styleClassManagement/oneRoundClassInterface";
+import { GridComponent } from "../grid/grid.component";
+import { Actions } from "../player/action";
 import { OwnerSymbol, Symbol, Symbols } from "../player/symbol";
 import { CellShellComponent } from "./cell-shell/cell-shell.component";
 
@@ -26,6 +27,7 @@ export class DeadCell implements IClassManagement {
   }
   protected onAttachedToShell = (sender: object | undefined, args: { shellValue: CellShellComponent | undefined }) => {
     this.decodeSymbolSrc();
+    this.toggleClasses();
   }
 
   // vlastník této buňky typu '../player/symbol.ClassifiedSymbol'
@@ -67,6 +69,24 @@ export class DeadCell implements IClassManagement {
     }
 
     return false;
+  }
+
+  // <operace se stylovými třídami>
+  public addClasses(classes: Array<string>) {
+    this.classManagementService.addClasses(this, classes);
+  }
+
+  public removeClasses(classes: Array<string>) {
+    this.classManagementService.removeClasses(this, classes);
+  }
+
+  public clearClasses() {
+    this.classManagementService.clearClasses(this);
+  }
+  // </operace se stylovými třídami>
+
+  public addOneRoundCls(grid: GridComponent, classes: Array<string>) {
+    grid.symbolActionStack.placeOnTop(Actions.oneRoundClass.toSymbolActionCell(this, classes, true));
   }
 
   public constructor(cmService: ClassManagementService) {

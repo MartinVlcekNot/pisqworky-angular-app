@@ -8,7 +8,12 @@ export class SymbolQueue {
 
   public static readonly desiredLength = 5;
 
-  public get queueLength(): number { return this.queue.length; }
+  public get queueLength(): number {
+    if (this.queue.length > 0)
+      return this.queue[0].symbols.length;
+
+    return 0;
+  }
 
   public get allowedSpecials(): Array<ClassifiedSymbol> {
     return Symbols.specials.filter((symb) => !this.isRestriction(symb, this.symbolRestrictions));
@@ -159,10 +164,11 @@ export class SymbolQueue {
   public resetQueue(update?: boolean) {
     this.queue.forEach((row) => {
       row.symbols = [];
-      this.queueRowUpdated(row);
 
       if (update === true)
         this.updateQueue(row.player, true);
+      else
+        this.queueRowUpdated(row);
     });
   }
 

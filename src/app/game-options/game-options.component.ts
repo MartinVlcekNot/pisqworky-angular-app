@@ -8,6 +8,8 @@ import { IGridDependent } from '../grid/gridCellInterface';
 import { GridComponent } from '../grid/grid.component';
 import { GridService } from '../grid/grid.service';
 import { Event } from '../../eventHandler/event';
+import { ClassManagementService } from '../../styleClassManagement/class-management.service';
+import { SymbolQueueEntity } from '../symbol-queue/symbolQueueEntity';
 
 @Component({
   selector: 'game-options',
@@ -20,6 +22,11 @@ export class GameOptionsComponent implements IGridDependent {
   public get gridId(): number { return this._gridId; }
   @Input() public set gridId(value: number) {
     this._gridId = value;
+
+    this.players.forEach((player) => {
+      if (this.grid)
+        this.symbQEntites.push(new SymbolQueueEntity(player, this.grid, this.cmService));
+    });
 
     // volání kvůli nastavení symbolů v 'this.grid?.playerDirector.symbolQueue.symbolRestrictions'
     this.gamemodeSwitched(this.gamemode);
@@ -34,6 +41,8 @@ export class GameOptionsComponent implements IGridDependent {
   protected get players(): Array<Owner> {
     return Symbols.players;
   }
+
+  protected symbQEntites: Array<SymbolQueueEntity> = [];
 
   protected getInpMunElemByName(name: string): InputNumElem {
     let inputElem = this.optionsObj.find((optElem) => {
@@ -85,7 +94,7 @@ export class GameOptionsComponent implements IGridDependent {
   protected get isNormal(): boolean { return this.gamemode === Gamemode.normal; }
   protected get isEnhanced(): boolean { return this.gamemode === Gamemode.enhanced; }
 
-  public constructor() {
+  public constructor(protected cmService: ClassManagementService) {
     this.gamemodeSwitch.addSubscriber(this.onGamemodeSwitched);
   }
 }

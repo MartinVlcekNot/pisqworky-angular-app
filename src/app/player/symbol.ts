@@ -227,8 +227,6 @@ export class Symbols {
     if (grid)
       allowedSymbs = grid.playerDirector.symbolQueue.allowedSpecials;
 
-    console.log(allowedSymbs);
-
     allowedSymbs.forEach((clsSymbol) => clsSymbol.odds !== undefined ? distribution += clsSymbol.odds : false);
     return distribution;
   }

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Event } from '../../eventHandler/event';
+import { Event, Handler } from '../../eventHandler/event';
 import { IClassManagement } from '../../styleClassManagement/classManagementInterface';
 import { ClassManagementService } from '../../styleClassManagement/class-management.service';
 
@@ -120,7 +120,11 @@ export class InputBoxComponent<T> implements IClassManagement {
 
     this._subscriberFuncs = value;
 
-    this.valueChange.addSubscribers(this.subscriberFuncs);
+    let subscribers: Array<{ handler: Handler<IBValueChangeArgs<T>>, priority?: number }> = [];
+    this.subscriberFuncs.forEach((func) => {
+      subscribers.push({ handler: func });
+    });
+    this.valueChange.addSubscribers(subscribers);
   };
 
   // továrna na vytváření argumentů pro vlastnost 'additionalArgs' parametru 'args' funkcí 'this.subscriberFuncs' 

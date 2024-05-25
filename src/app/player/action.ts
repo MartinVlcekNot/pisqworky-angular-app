@@ -1,4 +1,5 @@
 import { CPos, Cell } from "../cell/cell";
+import { DeadCell } from "../cell/deadCell";
 import { GridComponent } from "../grid/grid.component";
 import { Owner, OwnerSymbol, Symbol, Symbols } from "./symbol";
 
@@ -135,7 +136,7 @@ export class Action {
   }
 
   public static oneRoundClass: ActionFunc = (cell, decayIn, classes) => {
-    if (cell instanceof Cell) {
+    if (cell instanceof DeadCell) {
       const cls = classes as Array<string>;
 
       if (decayIn === 1) 
@@ -151,7 +152,7 @@ export class Action {
 }
 
 export type AFArgs = any;
-export type CellOrGrid = Cell | GridComponent;
+export type CellOrGrid = DeadCell | GridComponent;
 export type ActionFunc = (obj: CellOrGrid, decayIn: number | null, args?: AFArgs) => AFArgs;
 
 export type SymbolAction = {
@@ -174,7 +175,7 @@ export class ClsSymbAct {
     this.decayOpt = decayOpt;
   }
 
-  public toSymbolActionCell(cell: Cell, args?: AFArgs, immutable?: boolean): SymbolAction {
+  public toSymbolActionCell(cell: DeadCell, args?: AFArgs, immutable?: boolean): SymbolAction {
     Actions.decodeDecayOptOf(this);
 
     return {

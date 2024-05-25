@@ -3,9 +3,10 @@ import { GridComponent } from "../grid/grid.component";
 import { GridService } from "../grid/grid.service";
 import { Owner, Symbol } from "./symbol";
 import { Cell } from "../cell/cell";
-import { SymbolAction } from "./action";
+import { Actions, SymbolAction } from "./action";
 import { Event } from "../../eventHandler/event";
 import { SymbolQueue } from "./symbolQueue";
+import { before } from "node:test";
 
 export class SymbolActionStack {
 
@@ -63,37 +64,17 @@ export class SymbolActionStack {
     this.invoking = true;
 
     let remove: Array<SymbolAction> = [];
-    let invoked: Array<SymbolAction> = [];
 
     const startI = startIndex !== undefined ? startIndex : 0;
 
     for (let i = startI; i < this.stack.length; i++) {
       let symbAct = this.stack[i];
 
-      if (this.stack.includes(symbAct)) {
-        let invoke = true;
-
-        if (typeof symbAct.decayIn === "number") {
-          let decayIn = symbAct.decayIn as number;
-          decayIn--;
-
-          if (decayIn <= 0) {
-            remove.push(symbAct);
-            if (decayIn < 0)
-              invoke = false;
-          }
-
-          symbAct.decayIn = decayIn;
-        }
-
-        if (invoke) {
-          symbAct.args = symbAct.action(symbAct.obj, symbAct.decayIn, symbAct.args);
-          invoked.push(symbAct);
-        }
+      if (symbAct && this.stack.includes(symbAct)) {
+        if (SymbolActionStack.invokeAction(symbAct))
+          remove.push(symbAct);
       }
     }
-
-    console.log(invoked);
 
     this.stack = this.stack.filter((symbAct) => !remove.includes(symbAct));
     this.orderSymbolActions();
@@ -102,6 +83,33 @@ export class SymbolActionStack {
 
     this.grid.gridService.checkGridWin(this.grid);
   }
+
+  // vrací true/false indikující, jestli životní cyklus akce skončil
+  public static invokeAction(symbolAction: SymbolAction, decay: boolean = true): boolean {
+    let invoke = true;
+    let remove = false;
+
+    if (decay) {
+      if (typeof symbolAction.decayIn === "number") {
+        let decayIn = symbolAction.decayIn as number;
+        decayIn--;
+
+        if (decayIn <= 0) {
+          remove = true;
+          if (decayIn < 0)
+            invoke = false;
+        }
+
+        symbolAction.decayIn = decayIn;
+      }
+    }
+
+    if (invoke) {
+      symbolAction.args = symbolAction.action(symbolAction.obj, symbolAction.decayIn, symbolAction.args);
+    }
+
+    return remove;
+  }  
 
   public removeSymbAct(cell: Cell, includeRequest: boolean = true, includeStash: boolean = true): Array<SymbolAction> {
     let result = this.stack.filter((symbAct) => symbAct.obj === cell && !symbAct.immutable);
@@ -119,7 +127,14 @@ export class SymbolActionStack {
     return result;
   }
 
-  public clearStack() {
+  public clearStack(invokeOneRoundCls?: boolean) {
+    if (invokeOneRoundCls === true) {
+      this.stack.forEach((symbAct) => {
+        if (symbAct.action === Actions.oneRoundClass.action)
+          SymbolActionStack.invokeAction(symbAct);
+      });
+    }
+
     this.stack = [];
   }
 
@@ -140,7 +155,7 @@ export class SymbolActionStack {
     this.stack.push(...output);
   }
 
-  protected onPlayerSwitched = (sender: object | undefined, args: { playerValue: Owner }) => {
+  protected onPlayerSwitched = (sender: object | undefined, args: { player: Owner }) => {
     this.invokeStack();
   }
 
@@ -148,6 +163,6 @@ export class SymbolActionStack {
     this.grid = grid;
     this.gridService = this.grid.gridService;
 
-    this.gridService.getGridPlayerD(this.grid).playerSwitch.addSubscriber(this.onPlayerSwitched);
+    this.grid.playerDirector.playerSwitch.addSubscriber(this.onPlayerSwitched, 2);
   }
 }

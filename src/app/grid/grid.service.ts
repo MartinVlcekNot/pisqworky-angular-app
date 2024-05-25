@@ -273,7 +273,7 @@ export class GridService {
       cell.clearAndSetUp();
     });
 
-    grid.symbolActionStack.clearStack();
+    grid.symbolActionStack.clearStack(true);
     grid.resetPlayer();
   }
 

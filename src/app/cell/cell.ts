@@ -137,20 +137,6 @@ export class Cell extends DeadCell implements IPos<CPos>, IChildOf<GridRow>, ICl
     this.posObj.pos.row = args.rowValue;
   }
 
-  // <operace se stylovými třídami>
-  public addClasses(classes: Array<string>) {
-    this.classManagementService.addClasses(this, classes);
-  }
-
-  public removeClasses(classes: Array<string>) {
-    this.classManagementService.removeClasses(this, classes);
-  }
-
-  public clearClasses() {
-    this.classManagementService.clearClasses(this);
-  }
-  // </operace se stylovými třídami>
-
   public addOneRoundClasses(classes: Array<string>) {
     if (this.grid) 
       this.grid.symbolActionStack.placeOnTop(Actions.oneRoundClass.toSymbolActionCell(this, classes, true));

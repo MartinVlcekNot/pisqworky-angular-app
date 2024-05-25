@@ -6,6 +6,7 @@ import { ClassManagementService } from '../../styleClassManagement/class-managem
 import { IGridDependent } from '../grid/gridCellInterface';
 import { GridComponent } from '../grid/grid.component';
 import { GridService } from '../grid/grid.service';
+import { SymbolQueueEntity } from './symbolQueueEntity';
 
 @Component({
   selector: 'symbol-queue',
@@ -14,77 +15,25 @@ import { GridService } from '../grid/grid.service';
 })
 export class SymbolQueueComponent implements IGridDependent {
 
-  private _player!: Owner;
-  public get player(): Owner { return this._player; }
-  @Input() public set player(value: Owner) {
-    this._player = value;
-
-    this.initQueue();
+  private _entity: SymbolQueueEntity | undefined;
+  public get entity(): SymbolQueueEntity | undefined {
+    return this._entity;
   }
+  @Input() public set entity(value: SymbolQueueEntity) {
+    this._entity = value;
 
-  private _gridId!: number;
-  public get gridId(): number { return this._gridId; }
-  @Input() public set gridId(value: number) {
-    this._gridId = value;
-
-    this.symbolQueue = this.grid?.playerDirector.symbolQueue;
-    this.symbolQueue?.queueRowUpdate.addSubscriber(this.onQueueUpdated);
-
-    this.initQueue();
-  }
-
-  protected initQueue() {
-    if (this.symbolQueue) {
-      if (this.player && this.symbolQueue.queueLength > 0) {
-        let row = this.symbolQueue.findRow(this.player);
-
-        if (row)
-          this.createQueue(row);
-      }
-    }
+    if (this.entity)
+      this.entity.shell = this;
   }
 
   public get grid(): GridComponent | undefined {
-    return GridService.getGridById(this.gridId);
+    return this.entity?.grid;
   }
 
-  public symbolQueue: SymbolQueue | undefined;
+  public get cells(): Array<DeadCell> {
+    if (this.entity)
+      return this.entity.cells;
 
-  public cells: Array<DeadCell> = [];
-
-  protected onQueueUpdated = (sender: object | undefined, args: { row: QueueRow }) => {
-    console.log("updated");
-    this.createQueue(args.row);
-  }
-
-  protected createQueue(row: QueueRow): void {
-    if (row.player === this.player) {
-      for (let i = 0; i < row.symbols.length; i++) {
-        const symbol = row.symbols[i];
-
-        if (i > this.cells.length - 1)
-          this.cells.push(new DeadCell(this.cmService));
-
-        this.cells[i].symbol = symbol;
-
-        if (i === row.symbols.length - 1) {
-
-        }
-      }
-
-      if (this.symbolQueue && this.cells.length > SymbolQueue.desiredLength)
-        this.cells.splice(SymbolQueue.desiredLength);
-      else if (row.symbols.length < this.cells.length) {
-        for (let i = row.symbols.length; i < this.cells.length; i++) {
-          this.cells[i].symbol = Symbols.N;
-        }
-      }
-    }
-  }
-
-  public constructor(protected cmService: ClassManagementService) {
-    for (let i = 0; i < SymbolQueue.desiredLength; i++) {
-      this.cells.push(new DeadCell(this.cmService));
-    }
+    return [];
   }
 }

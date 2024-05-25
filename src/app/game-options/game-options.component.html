@@ -9,8 +9,8 @@
     <switchable-option [initState]="queueVisibleInit" [labelText]="'Show queue'" (switchEvent)="switchQueueVisibility($event)"></switchable-option>
     @if (queueVisible) {
     <div id="queues">
-      @for (player of players; track player) {
-      <symbol-queue [gridId]="gridId" [player]="player"></symbol-queue>
+      @for (sqEntity of symbQEntites; track sqEntity) {
+      <symbol-queue [entity]="sqEntity"></symbol-queue>
       }
     </div>
     }
