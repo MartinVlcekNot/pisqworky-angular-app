@@ -7,6 +7,7 @@ import { Owner, Symbols } from '../player/symbol';
 import { IGridDependent } from '../grid/gridCellInterface';
 import { GridComponent } from '../grid/grid.component';
 import { GridService } from '../grid/grid.service';
+import { Event } from '../../eventHandler/event';
 
 @Component({
   selector: 'game-options',
@@ -15,14 +16,19 @@ import { GridService } from '../grid/grid.service';
 })
 export class GameOptionsComponent implements IGridDependent {
 
-  // povinnost nastavit skrze stejnojmenný atribut tohoto komponentu (dynamická hodnota)
-  @Input() public gridId!: number;
+  private _gridId!: number;
+  public get gridId(): number { return this._gridId; }
+  @Input() public set gridId(value: number) {
+    this._gridId = value;
+
+    // volání kvůli nastavení symbolů v 'this.grid?.playerDirector.symbolQueue.symbolRestrictions'
+    this.gamemodeSwitched(this.gamemode);
+  }
 
   public get grid(): GridComponent | undefined {
     return GridService.getGridById(this.gridId);
   }
 
-  // povinnost nastavit skrze stejnojmenný atribut tohoto komponentu (dynamická hodnota)
   @Input() public optionsObj!: Array<OptionsElem>;
 
   protected get players(): Array<Owner> {
@@ -47,7 +53,27 @@ export class GameOptionsComponent implements IGridDependent {
     this.queueVisible = event.args.on;
   }
 
-  public gamemode: Gamemode = Gamemode.normal;
+  private _gamemode: Gamemode = Gamemode.normal;
+  public get gamemode(): Gamemode {
+    return this._gamemode;
+  }
+  public set gamemode(value: Gamemode) {
+    let previous = this._gamemode;
+
+    this._gamemode = value;
+
+    if (this.gamemode !== previous)
+      this.gamemodeSwitched(this.gamemode);
+  }
+
+  public gamemodeSwitch: Event<{ gamemode: Gamemode }> = new Event();
+  protected gamemodeSwitched(gamemode: Gamemode) {
+    this.gamemodeSwitch.invoke(this, { gamemode: gamemode });
+  }
+  protected onGamemodeSwitched = (sender: object | undefined, args: { gamemode: Gamemode }) => {
+    if (this.grid)
+      this.grid.playerDirector.symbolQueue.modRestExt(this, { restrictions: Symbols.specials, add: this.gamemode === Gamemode.normal })
+  }
 
   protected switchGamemode = (event: SwitchEvent) => {
     if (event.args.on)
@@ -58,6 +84,10 @@ export class GameOptionsComponent implements IGridDependent {
 
   protected get isNormal(): boolean { return this.gamemode === Gamemode.normal; }
   protected get isEnhanced(): boolean { return this.gamemode === Gamemode.enhanced; }
+
+  public constructor() {
+    this.gamemodeSwitch.addSubscriber(this.onGamemodeSwitched);
+  }
 }
 
 export type OptionsElem = {

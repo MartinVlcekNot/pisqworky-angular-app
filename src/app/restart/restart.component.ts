@@ -34,7 +34,9 @@ export class RestartComponent implements IGridDependent {
 
   // navázáno na událost 'click' v šabloně tohoto komponentu
   protected onClick() {
-    if (this.grid)
+    if (this.grid) {
       this.gridService.clearAndSetUpGrid(this.grid);
+      this.grid.playerDirector.symbolQueue.resetQueue();
+    }
   }
 }

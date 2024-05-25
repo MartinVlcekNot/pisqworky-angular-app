@@ -66,15 +66,24 @@ export class SymbolQueueComponent implements IGridDependent {
           this.cells.push(new DeadCell(this.cmService));
 
         this.cells[i].symbol = symbol;
+
+        if (i === row.symbols.length - 1) {
+
+        }
       }
 
-      if (this.symbolQueue && this.cells.length > this.symbolQueue.desiredLength)
-        this.cells.splice(this.symbolQueue.desiredLength);
+      if (this.symbolQueue && this.cells.length > SymbolQueue.desiredLength)
+        this.cells.splice(SymbolQueue.desiredLength);
+      else if (row.symbols.length < this.cells.length) {
+        for (let i = row.symbols.length; i < this.cells.length; i++) {
+          this.cells[i].symbol = Symbols.N;
+        }
+      }
     }
   }
 
   public constructor(protected cmService: ClassManagementService) {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < SymbolQueue.desiredLength; i++) {
       this.cells.push(new DeadCell(this.cmService));
     }
   }

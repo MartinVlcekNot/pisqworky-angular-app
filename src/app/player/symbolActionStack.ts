@@ -5,6 +5,7 @@ import { Owner, Symbol } from "./symbol";
 import { Cell } from "../cell/cell";
 import { SymbolAction } from "./action";
 import { Event } from "../../eventHandler/event";
+import { SymbolQueue } from "./symbolQueue";
 
 export class SymbolActionStack {
 
@@ -130,7 +131,7 @@ export class SymbolActionStack {
 
     const symbQueue = this.grid.playerDirector.symbolQueue;
 
-    for (let i = 0; i <= symbQueue.decayBeforePlacement(symbQueue.desiredLength - 1); i++) {
+    for (let i = 0; i <= symbQueue.decayBeforePlacement(SymbolQueue.desiredLength - 1); i++) {
       let psa = patchSymbActions.find((patchSymbAct) => patchSymbAct.decayIn === i);
       if (psa)
         output.push(psa);

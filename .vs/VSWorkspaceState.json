@@ -3,14 +3,14 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\cell",
-    "\\src\\app\\cell\\cell-shell",
-    "\\src\\app\\grid",
-    "\\src\\app\\parent",
+    "\\src\\app\\game-options",
+    "\\src\\app\\player",
     "\\src\\app\\restart",
+    "\\src\\app\\switch-button",
+    "\\src\\app\\switchable-option",
     "\\src\\app\\symbol-queue",
     "\\src\\styleClassManagement"
   ],
-  "SelectedNode": "\\src\\app\\cell\\cell.ts",
+  "SelectedNode": "\\src\\app\\game-options",
   "PreviewInSolutionExplorer": false
 }

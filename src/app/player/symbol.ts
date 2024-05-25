@@ -70,6 +70,14 @@ export class ClassifiedSymbol {
 
     return Symbols.N;
   }
+
+  public symbEquals(other: ClassifiedSymbol): boolean {
+    return this.represent === other.represent;
+  }
+
+  public valueEquals(other: ClassifiedSymbol): boolean {
+    return this.symbEquals(other) && this.clsToken === other.clsToken && this.odds === other.odds;
+  }
 }
 
 export type OwnerSymbol = {
@@ -80,6 +88,14 @@ export type OwnerSymbol = {
 }
 
 export class Symbols {
+
+  public static symbEquals(symb1: OwnerSymbol, symb2: OwnerSymbol): boolean {
+    return symb1.represent === symb2.represent;
+  }
+
+  public static valueEquals(symb1: OwnerSymbol, symb2: OwnerSymbol): boolean {
+    return this.symbEquals(symb1, symb2) && symb1.owner === symb2.owner;
+  }
 
   public static get none(): ClassifiedSymbol {
     return this.symbFrom(Symbol.none);
@@ -204,23 +220,41 @@ export class Symbols {
     return this.symbList.filter((clsSymb) => clsSymb.clsToken === ClassifierToken.primary);
   }
 
-  public static get distribution(): number {
+  public static getDistribution(grid?: GridComponent): number {
     let distribution = 0;
-    Symbols.specials.forEach((clsSymbol) => clsSymbol.odds !== undefined ? distribution += clsSymbol.odds : false);
+    let allowedSymbs: Array<ClassifiedSymbol> = this.specials;
+
+    if (grid)
+      allowedSymbs = grid.playerDirector.symbolQueue.allowedSpecials;
+
+    console.log(allowedSymbs);
+
+    allowedSymbs.forEach((clsSymbol) => clsSymbol.odds !== undefined ? distribution += clsSymbol.odds : false);
     return distribution;
   }
 
-  public static get odds(): Array<{ symbol: ClassifiedSymbol, odds: number }> {
+  public static getOdds(grid?: GridComponent): Array<{ symbol: ClassifiedSymbol, odds: number }> {
     let symbArr: Array<{ symbol: ClassifiedSymbol, odds: number }> = [];
-    this.specials.forEach((clsSymb) => {
-      symbArr.push({ symbol: clsSymb, odds: clsSymb.odds !== undefined ? clsSymb.odds / this.distribution : 0 });
-    });
+
+    let allowedSymbs: Array<ClassifiedSymbol> = this.specials;
+    let distribution = this.getDistribution(grid);
+
+    if (grid)
+      allowedSymbs = grid.playerDirector.symbolQueue.allowedSpecials;
+      
+
+    if (distribution !== 0) {
+      allowedSymbs.forEach((clsSymb) => {
+        symbArr.push({ symbol: clsSymb, odds: clsSymb.odds !== undefined ? clsSymb.odds / distribution : 0 });
+      });
+    }
+
     return symbArr;
   }
 
   public static get oddsString() {
     let str = "";
-    this.odds.forEach((chance) => {
+    this.getOdds().forEach((chance) => {
       str += `${Symbol[chance.symbol.represent]}: ${chance.odds * 100} %\n`;
     });
     return str;
